@@ -1,0 +1,112 @@
+'use client';
+import { Game } from './page';
+
+/**
+ * ============================================================
+ * DADOS DAS BRINCADEIRAS
+ * ============================================================
+ */
+export const games: Game[] = [
+  {
+    name: 'Amarelinha',
+    icon: '✦',
+    image: '/imagens/amarelinha.png',
+    color: 'yellow',
+    category: ['Coordenação'],
+    desc: 'Equilíbrio, saltos e muita concentração em uma brincadeira clássica.',
+    how: 'Desenhe casas numeradas no chão com giz. Jogue uma pedrinha, pule pelas casas sem pisar na casa marcada e volte para pegá-la.',
+    materials: 'Giz e uma pedrinha',
+    players: '1 ou mais',
+    age: 'A partir de 5 anos',
+    benefits: [
+      'Equilíbrio',
+      'Coordenação motora',
+      'Concentração',
+    ],
+  },
+  {
+    name: 'Pega-pega',
+    icon: '↗',
+    image: '/imagens/pega-pega.png',
+    color: 'coral',
+    category: ['Coordenação', 'Em Grupo'],
+    desc: 'Uma corrida cheia de energia para brincar com a turma toda.',
+    how: 'Escolham quem será o pegador. Ele tenta encostar nos demais, que correm para não serem pegos. Quem for tocado vira o novo pegador.',
+    materials: 'Nenhum',
+    players: '3 ou mais',
+    age: 'A partir de 4 anos',
+    benefits: [
+      'Agilidade',
+      'Movimento',
+      'Socialização',
+    ],
+  },
+  {
+    name: 'Esconde-esconde',
+    icon: '⌂',
+    image: '/imagens/esconde-esconde.png',
+    color: 'purple',
+    category: ['Criatividade', 'Em Grupo'],
+    desc: 'Imaginação e mistério em cada cantinho da casa ou do quintal.',
+    how: 'Uma pessoa conta de olhos fechados enquanto as outras se escondem. Depois, ela procura todos e corre para o pique.',
+    materials: 'Um espaço seguro',
+    players: '3 ou mais',
+    age: 'A partir de 5 anos',
+    benefits: [
+      'Criatividade',
+      'Raciocínio',
+      'Interação',
+    ],
+  },
+  {
+    name: 'Cabo de guerra',
+    icon: '≈',
+    image: '/imagens/cabo-de-guerra.png',
+    color: 'blue',
+    category: ['Em Grupo', 'Coordenação'],
+    desc: 'Força, união e trabalho em equipe para puxar a corda.',
+    how: 'Dividam-se em duas equipes e segurem uma corda. Ao sinal, cada grupo puxa para o seu lado.',
+    materials: 'Uma corda e espaço livre',
+    players: '6 ou mais',
+    age: 'A partir de 7 anos',
+    benefits: [
+      'Cooperação',
+      'Força',
+      'Trabalho em equipe',
+    ],
+  },
+  {
+    name: 'Corrida do saco',
+    icon: '↗',
+    image: '/imagens/corrida-do-saco.png',
+    color: 'green',
+    category: ['Em Grupo', 'Coordenação'],
+    desc: 'Pulos, risadas e uma corrida diferente para todo mundo.',
+    how: 'Cada participante entra em um saco e, ao sinal, pula até a linha de chegada.',
+    materials: 'Sacos resistentes',
+    players: '2 ou mais',
+    age: 'A partir de 6 anos',
+    benefits: [
+      'Equilíbrio',
+      'Coordenação',
+      'Diversão',
+    ],
+  },
+  {
+    name: 'Pular corda',
+    icon: '⌁',
+    // Não vi a imagem de pular corda na sua pasta, então esta fica sem a propriedade 'image' (não vai dar erro se você colocar o ? no tipo, como mostrado no passo 2)
+    color: 'orange',
+    category: ['Coordenação'],
+    desc: 'Um ritmo gostoso que pode ser brincado sozinho ou em roda.',
+    how: 'Pule a corda enquanto ela passa por baixo dos pés. Tente manter o ritmo e inventar novas formas de pular.',
+    materials: 'Uma corda',
+    players: '1 ou mais',
+    age: 'A partir de 5 anos',
+    benefits: [
+      'Ritmo',
+      'Resistência',
+      'Coordenação',
+    ],
+  },
+];

@@ -1,0 +1,95 @@
+{
+  "compilerOptions": {
+    // Garante a consistência de letras maiúsculas/minúsculas nos nomes dos arquivos entre diferentes sistemas operacionais.
+    "forceConsistentCasingInFileNames": true,
+
+    // Bibliotecas e recursos JavaScript disponíveis no projeto.
+    // "dom" permite utilizar recursos do navegador, como document e window.
+    // "dom.iterable" adiciona suporte a recursos iteráveis do DOM.
+    // "esnext" disponibiliza recursos modernos do JavaScript.
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    // Permite que arquivos JavaScript sejam utilizados junto com TypeScript.
+    "allowJs": true,
+
+    // Define a versão do JavaScript para a qual o código será direcionado.
+    "target": "ES6",
+
+    // Ignora a verificação de tipos dentro dos arquivos de declaração
+    // das bibliotecas, tornando a compilação mais rápida.
+    "skipLibCheck": true,
+
+    // Ativa a verificação rigorosa de tipos do TypeScript.
+    "strict": true,
+
+    // Impede que o TypeScript gere arquivos JavaScript.
+    // O TypeScript será utilizado apenas para verificar os tipos.
+    "noEmit": true,
+
+    // Permite importar módulos CommonJS utilizando a sintaxe ES Module.
+    "esModuleInterop": true,
+
+    // Define o sistema de módulos utilizado pelo projeto.
+    "module": "esnext",
+
+    // Define como o TypeScript localizará e resolverá os módulos.
+    // "bundler" é apropriado para projetos que utilizam ferramentas
+    // modernas de empacotamento, como o Next.js.
+    "moduleResolution": "bundler",
+
+    // Permite importar arquivos JSON diretamente no código TypeScript.
+    "resolveJsonModule": true,
+
+    // Garante que cada arquivo possa ser convertido isoladamente
+    // por ferramentas de compilação.
+    "isolatedModules": true,
+
+    // Define a forma como o JSX será transformado.
+    // "react-jsx" utiliza a transformação moderna do React,
+    // não exigindo importar React em todos os arquivos JSX/TSX.
+    "jsx": "react-jsx",
+
+    // Ativa a compilação incremental para acelerar verificações futuras.
+    "incremental": true,
+
+    // Plugins utilizados pelo TypeScript.
+    "plugins": [
+      {
+        // Plugin responsável pela integração do Next.js com o TypeScript.
+        "name": "next"
+      }
+    ],
+
+    // Cria atalhos para importar arquivos usando o símbolo "@".
+    // Exemplo:
+    // import Header from "@/components/Header"
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+
+  // Define os arquivos e pastas que serão incluídos na verificação
+  // do TypeScript.
+  "include": [
+    // Arquivo criado pelo Next.js com definições de tipos do ambiente.
+    "next-env.d.ts",
+
+    // Inclui todos os arquivos TypeScript do projeto.
+    "**/*.ts",
+
+    // Inclui todos os arquivos TypeScript com JSX.
+    "**/*.tsx",
+
+    // Inclui os tipos gerados pelo Next.js dentro da pasta .next.
+    ".next/types/**/*.ts",
+
+    // Inclui tipos gerados durante o desenvolvimento pelo Next.js.
+    ".next/dev/types/**/*.ts"
+  ],
+
+  // Define arquivos e pastas que não devem ser verificados.
+  "exclude": [
+    // Dependências instaladas pelo npm, pnpm ou yarn.
+    "node_modules"
+  ]
+}

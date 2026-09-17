@@ -1,0 +1,79 @@
+# ============================================================
+# .gitignore
+# ============================================================
+# Este arquivo define quais arquivos e pastas o Git deve ignorar.
+#
+# Tudo o que estiver listado aqui não será incluído nos commits
+# automaticamente quando o Git identificar arquivos novos.
+#
+# Isso ajuda a evitar o envio de arquivos temporários, arquivos
+# internos de ferramentas, dependências e informações sensíveis.
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. Arquivos internos do v0
+# ------------------------------------------------------------
+# Arquivos usados internamente pelo ambiente v0.
+# Eles não precisam ser enviados para o repositório Git.
+
+# Arquivo interno do carregador do ambiente v0
+__v0_runtime_loader.js
+
+# Arquivo interno das ferramentas de desenvolvimento do v0
+__v0_devtools.tsx
+
+# Runtime JSX usado internamente pelo v0
+__v0_jsx-dev-runtime.ts
+
+
+# ------------------------------------------------------------
+# 2. Pastas internas e temporárias do v0
+# ------------------------------------------------------------
+# Pastas utilizadas pelo v0 para armazenar dados internos,
+# arquivos temporários ou itens movidos para a lixeira.
+
+# Dados internos do Snowflake
+.snowflake/
+
+# Arquivos enviados para a lixeira do v0
+.v0-trash/
+
+# Arquivos relacionados à implantação na Vercel
+.vercel/
+
+
+# ------------------------------------------------------------
+# 3. Variáveis de ambiente
+# ------------------------------------------------------------
+# Arquivos `.env` podem conter informações sensíveis, como:
+# - Chaves de API;
+# - Senhas;
+# - Tokens;
+# - Configurações privadas;
+# - Dados de conexão.
+#
+# O padrão abaixo ignora arquivos como:
+# `.env.local`
+# `.env.development.local`
+# `.env.production.local`
+#
+# O uso de `*` permite aceitar diferentes nomes após `.env`.
+
+.env*.local
+
+
+# ------------------------------------------------------------
+# 4. Arquivos e pastas comuns para ignorar
+# ------------------------------------------------------------
+
+# Dependências instaladas pelo npm, yarn ou pnpm.
+# Essa pasta pode ser recriada usando o gerenciador de pacotes.
+node_modules
+
+# Arquivos gerados pelo Next.js durante o desenvolvimento
+# e durante a compilação do projeto.
+.next/
+
+# Arquivo de metadados criado pelo macOS
+.DS_Store

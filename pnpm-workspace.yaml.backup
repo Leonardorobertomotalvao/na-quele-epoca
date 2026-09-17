@@ -1,0 +1,19 @@
+# Configuração do pnpm para o projeto
+# Este arquivo define comportamentos relacionados à instalação e atualização
+# das dependências do workspace.
+
+# Em caso de falha durante a execução de um script ou processo do pnpm,
+# a falha será ignorada conforme essa configuração.
+onFail: ignore
+
+# Define um período mínimo de idade para versões de pacotes liberadas.
+# Pacotes recém-publicados normalmente precisam aguardar esse período
+# antes de serem considerados para instalação.
+#
+# A opção abaixo exclui alguns pacotes dessa regra de idade mínima.
+minimumReleaseAgeExclude:
+  # Permite versões do Next.js sem aplicar a idade mínima.
+  - '@next/*'
+
+  # Permite o pacote principal "next" sem aplicar a idade mínima.
+  - next

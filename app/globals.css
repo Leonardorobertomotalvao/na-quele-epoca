@@ -1,0 +1,1537 @@
+/* =========================================================
+   SITE: NA MINHA ÉPOCA
+   ARQUIVO: style.css
+   DESCRIÇÃO:
+   Folha de estilos principal do site de brincadeiras antigas.
+   O código está dividido por seções e possui comentários
+   explicando a função de cada grupo de estilos.
+   ========================================================= */
+
+
+/* =========================================================
+   1. IMPORTAÇÃO DE FONTES E BIBLIOTECAS
+   ========================================================= */
+
+/* Importa as fontes utilizadas no projeto. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+/* Bibliotecas utilizadas pelo projeto. */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+
+/* =========================================================
+   2. VARIÁVEIS GLOBAIS E CONFIGURAÇÕES GERAIS
+   ========================================================= */
+
+:root {
+  /* Paleta principal do site. */
+  --green: #16c978;
+  --dark-green: #087b55;
+  --turquoise: #23c9c6;
+  --yellow: #fff0a9;
+  --gold: #ffd54f;
+  --orange: #ff7541;
+
+  /* Cores de texto e fundo. */
+  --ink: #15343b;
+  --muted: #557277;
+  --white: #fffdf5;
+}
+
+/* Faz o navegador calcular melhor o tamanho dos elementos. */
+* {
+  box-sizing: border-box;
+}
+
+/* Ativa a rolagem suave ao clicar nos links internos. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilos básicos da página. */
+body {
+  margin: 0;
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Faz os campos e botões usarem a mesma fonte do site. */
+button,
+input {
+  font: inherit;
+}
+
+/* Mostra o cursor de clique nos botões. */
+button {
+  cursor: pointer;
+}
+
+/* Remove o sublinhado padrão dos links. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   3. CABEÇALHO / HEADER
+   ========================================================= */
+
+/* Barra superior fixa durante a rolagem. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: block;
+
+  background: var(--green);
+  color: white;
+
+  box-shadow: 0 3px 15px #07583925;
+}
+
+/* Área interna do cabeçalho. */
+.header-inner {
+  max-width: 1240px;
+  min-height: 78px;
+
+  margin: auto;
+  padding: 0 34px;
+
+  display: flex;
+  align-items: center;
+  gap: 42px;
+}
+
+/* Marca / logotipo do site. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  font-family: 'Plus Jakarta Sans';
+  font-size: 16px;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+
+  white-space: nowrap;
+}
+
+/* Texto em destaque dentro da marca. */
+.brand b {
+  font-size: 24px;
+}
+
+/* Símbolo decorativo da marca. */
+.brand-mark {
+  color: #ffdf45;
+  font-size: 31px;
+  line-height: 1;
+
+  transform: rotate(15deg);
+}
+
+/* Menu de navegação. */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+
+  flex: 1;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Links do menu. */
+.nav a {
+  opacity: 0.85;
+  transition: 0.2s;
+}
+
+/* Destaca o primeiro link e o link sob o mouse. */
+.nav a:first-child,
+.nav a:hover {
+  opacity: 1;
+  color: #fff3a9;
+}
+
+/* Área dos botões e da busca no cabeçalho. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-left: auto;
+}
+
+/* Campo de pesquisa. */
+.search-box {
+  width: 270px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 17px;
+
+  background: #fff;
+  color: #849897;
+  border-radius: 100px;
+}
+
+/* Ícone da pesquisa. */
+.search-box svg {
+  width: 18px;
+}
+
+/* Campo de texto da pesquisa. */
+.search-box input {
+  width: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+/* Botão do menu mobile.
+   Fica escondido no computador e aparece no celular. */
+.menu-button {
+  display: none;
+
+  padding: 4px;
+
+  background: none;
+  border: 0;
+  color: white;
+}
+
+
+/* =========================================================
+   4. SEÇÃO PRINCIPAL / HERO
+   ========================================================= */
+
+/* Fundo e estrutura da seção principal. */
+.hero {
+  position: relative;
+  overflow: hidden;
+
+  background: var(--turquoise);
+  color: white;
+}
+
+/* Conteúdo interno da seção principal. */
+.hero-inner {
+  position: relative;
+  z-index: 1;
+
+  max-width: 1240px;
+  min-height: 510px;
+
+  margin: auto;
+  padding: 78px 34px 66px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+/* Limita a largura do texto principal. */
+.hero-copy {
+  max-width: 595px;
+}
+
+/* Pequeno título acima do título principal. */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0 0 19px;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+/* Linha decorativa do eyebrow. */
+.eyebrow span {
+  display: inline-block;
+
+  width: 24px;
+  height: 3px;
+
+  background: #ffdb4b;
+  border-radius: 5px;
+}
+
+/* Cor da linha decorativa em fundos claros. */
+.eyebrow.dark span {
+  background: var(--orange);
+}
+
+/* Remove margens superiores dos títulos e parágrafos. */
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+/* Fonte dos títulos principais. */
+h1,
+h2 {
+  font-family: 'Plus Jakarta Sans';
+  letter-spacing: -0.05em;
+}
+
+/* Título principal do Hero. */
+h1 {
+  max-width: 600px;
+
+  margin-bottom: 24px;
+
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 1.04;
+}
+
+/* Palavra destacada nos títulos. */
+h1 em,
+h2 em {
+  color: #ffe05f;
+  font-style: normal;
+}
+
+/* Texto de apresentação do Hero. */
+.hero-text {
+  max-width: 445px;
+
+  margin-bottom: 30px;
+
+  color: #e6ffff;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Botão principal do Hero e botão do modal. */
+.hero-cta,
+.modal-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 20px;
+
+  background: #fff;
+  color: var(--dark-green);
+
+  border: 0;
+  border-radius: 10px;
+
+  font-weight: 700;
+
+  box-shadow: 0 6px 0 #0b9c7d;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Efeito ao passar o mouse sobre os botões. */
+.hero-cta:hover,
+.modal-button:hover {
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 #0b9c7d;
+}
+
+/* Tamanho dos ícones dos botões. */
+.hero-cta svg,
+.memory-copy a svg,
+.game-body button svg {
+  width: 17px;
+}
+
+/* Pequena observação abaixo do botão principal. */
+.hero-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-top: 24px;
+
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* Ícone da observação. */
+.hero-note svg {
+  width: 15px;
+  color: #ffea69;
+}
+
+
+/* =========================================================
+   5. ILUSTRAÇÃO DO HERO E MASCOTE
+   ========================================================= */
+
+/* Área que contém os elementos decorativos. */
+.hero-art {
+  position: relative;
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Novo Mascote */
+.hero-mascote {
+  position: relative;
+  z-index: 2;
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* Sol decorativo. */
+.sun {
+  position: absolute;
+  top: 8px;
+  right: 20%;
+
+  color: #ffe45f;
+  font-size: 35px;
+}
+
+/* Nuvens decorativas. */
+.cloud {
+  position: absolute;
+
+  width: 80px;
+  height: 18px;
+
+  background: #b7f1ea;
+  border-radius: 100px;
+  opacity: 0.8;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud::before {
+  width: 32px;
+  height: 32px;
+  left: 16px;
+  bottom: 0;
+}
+
+.cloud::after {
+  width: 23px;
+  height: 23px;
+  left: 42px;
+  bottom: 0;
+}
+
+.cloud-one {
+  top: 15%;
+  left: 11%;
+}
+
+.cloud-two {
+  top: 65%;
+  right: 4%;
+  transform: scale(0.7);
+}
+
+/* Estrelas decorativas. */
+.hero-star {
+  position: absolute;
+
+  color: #fff4a7;
+  font-size: 25px;
+}
+
+.star-one {
+  left: 10%;
+  top: 43%;
+}
+
+.star-two {
+  right: 7%;
+  top: 26%;
+}
+
+/* Círculos decorativos no fundo do Hero. */
+.hero-shape {
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border: 1px solid #fff4;
+  border-radius: 50%;
+}
+
+.shape-one {
+  right: -130px;
+  bottom: -240px;
+}
+
+.shape-two {
+  left: -220px;
+  top: -280px;
+}
+
+/* Esconde o ícone "N" (Next.js Dev Overlay) */
+nextjs-portal {
+  display: none !important;
+}
+/* =========================================================
+   6. SEÇÕES DE CONTEÚDO E CATEGORIAS
+   ========================================================= */
+
+/* Largura e espaçamento padrão das seções. */
+.content-section,
+.games-section,
+.about-section {
+  max-width: 1240px;
+
+  margin: auto;
+  padding: 80px 34px 30px;
+}
+
+/* Cabeçalho de cada seção. */
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 30px;
+
+  margin-bottom: 30px;
+}
+
+/* Título das seções. */
+.section-heading h2 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 45px);
+}
+
+/* Eyebrow usado em áreas de fundo claro. */
+.eyebrow.dark {
+  margin-bottom: 13px;
+  color: #648086;
+}
+
+/* Texto auxiliar dos títulos. */
+.heading-helper {
+  margin: 0;
+
+  color: #658083;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Grade das categorias. */
+.category-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 13px;
+}
+
+/* Botão de cada categoria. */
+.category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 16px;
+
+  background: #fffbda;
+  color: var(--ink);
+
+  border: 2px solid transparent;
+  border-radius: 14px;
+
+  text-align: left;
+  box-shadow: 0 3px 0 #d8d686;
+  transition: 0.2s;
+}
+
+/* Efeito visual da categoria ativa ou sob o mouse. */
+.category:hover,
+.category.active {
+  background: var(--gold);
+  border-color: #efbd28;
+  transform: translateY(-2px);
+}
+
+/* Ícone da categoria. */
+.category-icon {
+  display: grid;
+  place-items: center;
+
+  min-width: 38px;
+  height: 38px;
+
+  background: #ffdf6a;
+  color: #765b15;
+  border-radius: 11px;
+}
+
+/* Tamanho do ícone interno. */
+.category-icon svg {
+  width: 19px;
+}
+
+/* Título e descrição da categoria. */
+.category strong,
+.category small {
+  display: block;
+}
+
+.category strong {
+  font-size: 14px;
+}
+
+.category small {
+  margin-top: 3px;
+
+  color: #738284;
+  font-size: 11px;
+}
+
+/* Seta da categoria. */
+.category-arrow {
+  width: 14px;
+
+  margin-left: auto;
+
+  color: #7a7c5a;
+  transform: rotate(-90deg);
+}
+
+
+/* =========================================================
+   7. SEÇÃO DE BRINCADEIRAS E CARDS
+   ========================================================= */
+
+/* Espaçamento específico da seção de jogos. */
+.games-section {
+  padding-top: 63px;
+  padding-bottom: 90px;
+}
+
+/* Espaçamento do cabeçalho dos jogos. */
+.games-heading {
+  margin-bottom: 24px;
+}
+
+/* Contador de resultados. */
+.result-count {
+  display: inline-block;
+
+  padding: 8px 13px;
+
+  background: #fff5bc;
+  color: #7c8262;
+
+  border-radius: 30px;
+  font-size: 12px;
+}
+
+/* Grade dos cards de brincadeiras. */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+}
+
+/* Card individual de brincadeira. */
+.game-card {
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #fffdf5;
+  border-radius: 16px;
+
+  box-shadow: 0 6px 0 #d0d27f;
+  transition: 0.2s;
+}
+
+/* Animação do card ao passar o mouse. */
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 0 #d0d27f;
+}
+
+/* Área visual do card. */
+.game-visual {
+  position: relative;
+  overflow: hidden;
+
+  height: 150px;
+
+  display: grid;
+  place-items: center;
+}
+
+/* Cores alternativas dos cards. */
+.game-visual.yellow {
+  background: #ffe18a;
+}
+
+.game-visual.coral {
+  background: #ffae79;
+}
+
+.game-visual.purple {
+  background: #c8b8ec;
+}
+
+.game-visual.blue {
+  background: #82d8e1;
+}
+
+.game-visual.green {
+  background: #96dca3;
+}
+
+.game-visual.orange {
+  background: #f6bd76;
+}
+
+/* Emoji ou símbolo principal do card. */
+.game-bubble {
+  z-index: 1;
+
+  color: #fff8c9;
+  font-family: 'Plus Jakarta Sans';
+  font-size: 65px;
+
+  text-shadow: 3px 3px #fff8c955;
+}
+
+/* Etiqueta da brincadeira. */
+.game-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+
+  padding: 5px 8px;
+
+  background: #ffffff99;
+  border-radius: 20px;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Elemento circular decorativo do card. */
+.game-doodle {
+  position: absolute;
+
+  width: 210px;
+  height: 210px;
+
+  border: 2px dashed #fff8c955;
+  border-radius: 50%;
+
+  transform: rotate(25deg);
+}
+
+/* Conteúdo textual do card. */
+.game-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  padding: 17px 16px 16px;
+}
+
+/* Nome da brincadeira. */
+.game-body h3 {
+  margin-bottom: 7px;
+
+  font-family: 'Plus Jakarta Sans';
+  font-size: 17px;
+}
+
+/* Descrição da brincadeira. */
+.game-body p {
+  min-height: 54px;
+
+  margin-bottom: 15px;
+
+  color: #718084;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Botão de abrir os detalhes da brincadeira. */
+.game-body button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: auto;
+  padding: 10px 12px;
+
+  background: var(--orange);
+  color: #fff;
+
+  border: 0;
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Cor do botão ao passar o mouse. */
+.game-body button:hover {
+  background: #ee5e2c;
+}
+
+/* Mensagem exibida quando não existem resultados. */
+.empty {
+  padding: 50px;
+
+  background: #fff8d3;
+  color: #718084;
+
+  border-radius: 18px;
+  text-align: center;
+}
+
+/* Ícone da mensagem vazia. */
+.empty svg {
+  color: var(--orange);
+}
+
+/* Título da mensagem vazia. */
+.empty h3 {
+  margin: 15px 0 8px;
+
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans';
+}
+
+/* Botão da mensagem vazia. */
+.empty button {
+  padding: 12px 18px;
+
+  background: var(--orange);
+  color: #fff;
+
+  border: 0;
+  border-radius: 8px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   8. SEÇÃO DE MEMÓRIAS
+   ========================================================= */
+
+/* Área verde que apresenta as memórias antigas. */
+.memory-section {
+  min-height: 400px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 70px;
+
+  padding: 75px max(34px, calc((100% - 1172px) / 2));
+
+  overflow: hidden;
+
+  background: #0c8b62;
+  color: #fff;
+}
+
+/* Limita a largura do texto da seção. */
+.memory-copy {
+  max-width: 500px;
+}
+
+/* Título da seção de memórias. */
+.memory-copy h2 {
+  margin-bottom: 22px;
+
+  font-size: clamp(38px, 5vw, 57px);
+  line-height: 1.04;
+}
+
+/* Texto da seção de memórias. */
+.memory-copy p:not(.eyebrow) {
+  color: #d2f7e9;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Link da seção de memórias. */
+.memory-copy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 14px;
+
+  color: #ffe15b;
+  font-weight: 700;
+}
+
+/* Área onde ficam os cartões de memória. */
+.memory-cards {
+  position: relative;
+  min-height: 270px;
+}
+
+/* Cartão individual de memória. */
+.memory-card {
+  position: absolute;
+
+  width: 235px;
+  height: 205px;
+
+  padding: 29px 26px;
+
+  background: #fff8da;
+  color: var(--ink);
+
+  border-radius: 5px;
+  box-shadow: 10px 12px 0 #066d4e;
+
+  font-family: 'Plus Jakarta Sans';
+}
+
+/* Símbolo dentro do cartão. */
+.memory-card span {
+  color: var(--orange);
+  font-size: 35px;
+}
+
+/* Texto do cartão. */
+.memory-card p {
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+/* Texto pequeno do cartão. */
+.memory-card small {
+  color: #7c8f8a;
+  font-family: 'DM Sans';
+  font-size: 10px;
+}
+
+/* Inclinação dos cartões. */
+.rotate-left {
+  top: 19px;
+  left: 12%;
+
+  transform: rotate(-8deg);
+}
+
+.rotate-right {
+  top: 55px;
+  right: 10%;
+
+  background: #ffe375;
+  transform: rotate(8deg);
+}
+
+/* Cor do símbolo do segundo cartão. */
+.rotate-right span {
+  color: #0c8b62;
+}
+
+
+/* =========================================================
+   9. SEÇÃO SOBRE O PROJETO
+   ========================================================= */
+
+/* Área de apresentação do projeto. */
+.about-section {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+
+  padding-top: 85px;
+  padding-bottom: 85px;
+}
+
+/* Ícone da seção Sobre. */
+.about-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+
+  width: 70px;
+  height: 70px;
+
+  background: var(--orange);
+  color: white;
+  border-radius: 18px;
+}
+
+/* Tamanho do ícone interno. */
+.about-icon svg {
+  width: 32px;
+}
+
+/* Título da seção Sobre. */
+.about-section h2 {
+  margin-bottom: 14px;
+  font-size: 36px;
+}
+
+/* Limita a largura do texto da seção Sobre. */
+.about-section > div:last-child {
+  max-width: 690px;
+}
+
+/* Parágrafo final da seção Sobre. */
+.about-section p:last-child {
+  margin: 0;
+
+  color: #5c7779;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   10. RODAPÉ / FOOTER
+   ========================================================= */
+
+/* Fundo e espaçamento do rodapé. */
+footer {
+  padding: 44px max(34px, calc((100% - 1172px) / 2)) 22px;
+
+  background: #075b48;
+  color: #cbf3e4;
+}
+
+/* Área principal do rodapé. */
+.footer-main {
+  display: flex;
+  align-items: start;
+  gap: 50px;
+
+  padding-bottom: 36px;
+}
+
+/* Marca no rodapé. */
+.footer-brand {
+  color: #fff;
+}
+
+/* Texto de apresentação do rodapé. */
+.footer-main > p {
+  color: #abe4d0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Links do rodapé. */
+.footer-main nav {
+  display: flex;
+  gap: 25px;
+
+  margin-left: auto;
+
+  color: #d7f8e9;
+  font-size: 13px;
+}
+
+/* Parte inferior do rodapé. */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #ffffff30;
+
+  color: #8ecdb9;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   11. MODAL DE DETALHES DA BRINCADEIRA
+   ========================================================= */
+
+/* Fundo escuro atrás do modal. */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+
+  display: grid;
+  place-items: center;
+
+  padding: 20px;
+
+  background: #073f35aa;
+  backdrop-filter: blur(5px);
+}
+
+/* Caixa principal do modal. */
+.modal {
+  position: relative;
+
+  width: min(690px, 100%);
+  max-height: 90vh;
+
+  overflow: auto;
+
+  background: #fffdf5;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px #073f3555;
+}
+
+/* Botão de fechar o modal. */
+.modal-close {
+  position: absolute;
+  z-index: 1;
+
+  top: 16px;
+  right: 16px;
+
+  display: grid;
+  place-items: center;
+
+  width: 35px;
+  height: 35px;
+
+  background: #ffffffaa;
+  border: 0;
+  border-radius: 50%;
+}
+
+/* Ícone do botão fechar. */
+.modal-close svg {
+  width: 18px;
+}
+
+/* Área visual superior do modal. */
+.modal-art {
+  height: 145px;
+}
+
+/* Conteúdo textual do modal. */
+.modal-content {
+  padding: 25px 30px 30px;
+}
+
+/* Título do modal. */
+.modal-content h2 {
+  margin: 0 0 8px;
+  font-size: 34px;
+}
+
+/* Descrição da brincadeira no modal. */
+.modal-desc {
+  margin-bottom: 22px;
+  color: #668083;
+}
+
+/* Grade com informações da brincadeira. */
+.modal-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 19px 25px;
+
+  padding-top: 19px;
+  border-top: 1px solid #e5e6c9;
+}
+
+/* Rótulos das informações. */
+.modal-facts small,
+.benefits > small {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #8c9886;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* Valores das informações. */
+.modal-facts p {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Área de benefícios da brincadeira. */
+.benefits {
+  margin-top: 22px;
+  padding-top: 19px;
+
+  border-top: 1px solid #e5e6c9;
+}
+
+/* Lista de benefícios. */
+.benefits div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Cada benefício individual. */
+.benefits span {
+  padding: 8px 11px;
+
+  background: #e7f6da;
+  color: #327052;
+
+  border-radius: 30px;
+  font-size: 11px;
+}
+
+/* Ícones dos benefícios. */
+.benefits svg {
+  width: 13px;
+  vertical-align: middle;
+}
+
+/* Botão principal do modal. */
+.modal-button {
+  margin-top: 24px;
+  padding: 12px 17px;
+
+  background: var(--orange);
+  color: white;
+
+  box-shadow: none;
+}
+
+/* Remove a sombra no efeito hover do botão do modal. */
+.modal-button:hover {
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   12. RESPONSIVIDADE — TABLETS E TELAS MÉDIAS
+   ========================================================= */
+
+/* Ajustes para telas de até 1000px. */
+@media (max-width: 1000px) {
+  /* Reduz a grade de jogos para 3 colunas. */
+  .game-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Reduz a grade de categorias para 2 colunas. */
+  .category-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Diminui o espaço entre os links do menu. */
+  .nav {
+    gap: 15px;
+  }
+
+  /* Diminui o espaço interno do cabeçalho. */
+  .header-inner {
+    gap: 20px;
+  }
+}
+
+
+/* =========================================================
+   13. RESPONSIVIDADE — CELULARES
+   ========================================================= */
+
+/* Ajustes para telas de até 700px. */
+@media (max-width: 700px) {
+  /* Cabeçalho mobile. */
+  .header-inner {
+    min-height: 68px;
+    padding: 0 20px;
+  }
+
+  .brand {
+    font-size: 13px;
+  }
+
+  .brand b {
+    font-size: 20px;
+  }
+
+  .brand-mark {
+    font-size: 25px;
+  }
+
+  /* Exibe o botão do menu mobile. */
+  .menu-button {
+    display: block;
+  }
+
+  /* Menu escondido inicialmente no celular. */
+  .nav {
+    display: none;
+
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+
+    flex-direction: column;
+    align-items: start;
+    gap: 18px;
+
+    padding: 18px 25px;
+
+    background: var(--dark-green);
+  }
+
+  /* Classe adicionada pelo JavaScript para abrir o menu. */
+  .nav.open {
+    display: flex;
+  }
+
+  /* Ajustes da área de ações do cabeçalho. */
+  .header-actions {
+    margin-left: auto;
+  }
+
+  /* Campo de busca menor no celular. */
+  .search-box {
+    width: min(48vw, 220px);
+    height: 37px;
+    padding: 0 12px;
+  }
+
+  .search-box input {
+    font-size: 11px;
+  }
+
+  /* Hero passa a usar apenas uma coluna. */
+  .hero-inner {
+    min-height: 680px;
+
+    grid-template-columns: 1fr;
+
+    padding: 56px 25px 35px;
+
+    text-align: center;
+  }
+
+  .hero-copy {
+    margin: auto;
+  }
+
+  .eyebrow {
+    justify-content: center;
+  }
+
+  .hero-text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-cta {
+    font-size: 13px;
+  }
+
+  .hero-note {
+    justify-content: center;
+  }
+
+  /* Ilustração menor no celular. */
+  .hero-art {
+    min-height: 270px;
+  }
+
+  .kite-wrap {
+    top: -5px;
+
+    transform: translateX(-50%) scale(0.78) rotate(8deg);
+  }
+
+  .hero-art .sun {
+    right: 9%;
+  }
+
+  /* Reduz o espaçamento lateral das seções. */
+  .content-section,
+  .games-section,
+  .about-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Cabeçalho das seções passa a ser vertical. */
+  .section-heading {
+    display: block;
+  }
+
+  .heading-helper {
+    margin-top: 13px;
+  }
+
+  /* Categorias em duas colunas. */
+  .category-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .category {
+    padding: 12px 10px;
+  }
+
+  .category small {
+    display: none;
+  }
+
+  .category-icon {
+    min-width: 33px;
+    height: 33px;
+  }
+
+  /* Jogos em duas colunas. */
+  .game-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 11px;
+  }
+
+  .game-visual {
+    height: 120px;
+  }
+
+  .game-body {
+    padding: 13px;
+  }
+
+  .game-body h3 {
+    font-size: 15px;
+  }
+
+  .game-body p {
+    min-height: 67px;
+    font-size: 11px;
+  }
+
+  /* Seção de memórias em uma coluna. */
+  .memory-section {
+    grid-template-columns: 1fr;
+    gap: 25px;
+
+    padding: 62px 25px;
+  }
+
+  .memory-cards {
+    min-height: 260px;
+  }
+
+  .rotate-left {
+    left: 6%;
+  }
+
+  .rotate-right {
+    right: 4%;
+  }
+
+  /* Seção Sobre com menos espaçamento. */
+  .about-section {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  .about-section h2 {
+    font-size: 30px;
+  }
+
+  /* Rodapé adaptado para telas menores. */
+  .footer-main {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-main nav {
+    width: 100%;
+
+    margin-left: 0;
+
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .footer-bottom {
+    display: block;
+    line-height: 1.7;
+  }
+
+  .footer-bottom span {
+    display: block;
+  }
+
+  /* Ajustes do modal no celular. */
+  .modal-content {
+    padding: 22px;
+  }
+
+  .modal-facts {
+    gap: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 29px;
+  }
+}
+
+
+/* =========================================================
+   14. RESPONSIVIDADE — CELULARES PEQUENOS
+   ========================================================= */
+
+/* Ajustes para telas de até 420px. */
+@media (max-width: 420px) {
+  /* Cards de jogos passam a ocupar uma coluna. */
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-visual {
+    height: 150px;
+  }
+
+  /* Categorias passam a ocupar uma coluna. */
+  .category-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Mostra novamente a descrição das categorias. */
+  .category small {
+    display: block;
+  }
+
+  /* Contador fica separado do título. */
+  .result-count {
+    display: inline-block;
+    margin-top: 16px;
+  }
+}
