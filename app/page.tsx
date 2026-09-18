@@ -168,6 +168,9 @@ export default function Page() {
               />
             </label>
 
+            {/* Botão de acessibilidade: alterna entre modo claro e escuro. */}
+            <ThemeToggle />
+
             <button
               className="menu-button"
               type="button"
