@@ -109,8 +109,9 @@ export const games: Game[] = [
       'Coordenação',
     ],
   },
-  {
-    name: 'Pião',
+
+{
+  name: 'Pião',
   icon: '◎',
   image: '/imagens/piao.png',
   color: 'orange',
@@ -127,4 +128,23 @@ export const games: Game[] = [
     'Habilidade manual',
   ],
 },
+{
+  name: 'Bolinha de gude',
+  icon: '●',
+  image: '/imagens/bolinha de gude.png',
+  color: 'orange',
+  category: ['Coordenação', 'Habilidade'],
+  desc: 'Uma brincadeira clássica que testa a pontaria e a precisão dos jogadores.',
+  how: 'Desenhe um círculo no chão e coloque algumas bolinhas de gude dentro. Cada jogador deve tentar acertar as bolinhas com a sua própria bolinha, usando os dedos. O objetivo é tirar as bolinhas do círculo.',
+  materials: 'Bolinhas de gude e giz',
+  players: '2 ou mais',
+  age: 'A partir de 5 anos',
+  benefits: [
+    'Coordenação motora',
+    'Concentração',
+    'Precisão',
+    'Raciocínio',
+  ],
+},
 ];
+
