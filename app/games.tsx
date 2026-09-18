@@ -128,9 +128,10 @@ export const games: Game[] = [
     'Habilidade manual',
   ],
 },
+
   {
     name: 'Bolinha de gude',
-    icon: '⚫',
+    icon: '◎',
     image: '/imagens/bolinha-de-gude.png',
     color: 'orange',
     category: ['Coordenação', 'Em Grupo'],
