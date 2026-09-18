@@ -24,7 +24,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
-import { games } from './games.1'
+import { games } from './games'
 
 /**
  * ============================================================
