@@ -30,6 +30,10 @@
  */
 import { Analytics } from '@vercel/analytics/next'
 
+/*
+ * Importa o componente para voltar ao topo da página.
+ */
+import ScrollToTop from '../components/ui/ScrollToTop'
 
 /*
  * Importa os tipos Metadata e Viewport do Next.js.
@@ -234,18 +238,14 @@ export default function RootLayout({
         {/*
          * Carrega o Analytics somente quando o projeto
          * está rodando em ambiente de produção.
-         *
-         * process.env.NODE_ENV pode assumir valores como:
-         * - development
-         * - production
-         * - test
-         *
-         * Dessa forma, o Analytics não é carregado
-         * durante o desenvolvimento local.
          */}
         {process.env.NODE_ENV === 'production' && <Analytics />}
+
+        {/*
+         * Renderiza o botão flutuante para voltar ao topo.
+         */}
+        <ScrollToTop />
       </body>
     </html>
   )
 }
-
