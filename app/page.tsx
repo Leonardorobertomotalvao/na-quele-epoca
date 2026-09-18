@@ -25,7 +25,7 @@ import {
   X,
 } from 'lucide-react'
 import { games } from './games'
-
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 /**
  * ============================================================
  * TIPOS
