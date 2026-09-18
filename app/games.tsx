@@ -95,7 +95,7 @@ export const games: Game[] = [
   {
     name: 'Pular corda',
     icon: '⌁',
-    // Não vi a imagem de pular corda na sua pasta, então esta fica sem a propriedade 'image' (não vai dar erro se você colocar o ? no tipo, como mostrado no passo 2)
+    image: '/imagens/pular-corda.png',
     color: 'orange',
     category: ['Coordenação'],
     desc: 'Um ritmo gostoso que pode ser brincado sozinho ou em roda.',
