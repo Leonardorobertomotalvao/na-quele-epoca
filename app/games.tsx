@@ -133,7 +133,7 @@ export const games: Game[] = [
   icon: '●',
   image: '/imagens/bolinha de gude.png',
   color: 'orange',
-  category: ['Coordenação', 'Habilidade'],
+  category: ['Coordenação',],
   desc: 'Uma brincadeira clássica que testa a pontaria e a precisão dos jogadores.',
   how: 'Desenhe um círculo no chão e coloque algumas bolinhas de gude dentro. Cada jogador deve tentar acertar as bolinhas com a sua própria bolinha, usando os dedos. O objetivo é tirar as bolinhas do círculo.',
   materials: 'Bolinhas de gude e giz',
