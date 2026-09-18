@@ -109,32 +109,30 @@ export const games: Game[] = [
       'Coordenação',
     ],
   },
-
-{
-  name: 'Pião',
-  icon: '◎',
-  image: '/imagens/piao.png',
-  color: 'orange',
-  category: ['Coordenação'],
-  desc: 'Uma brincadeira clássica que desafia a habilidade e a concentração.',
-  how: 'Enrole o barbante ao redor do pião e puxe com firmeza para fazê-lo girar. Tente mantê-lo girando pelo maior tempo possível.',
-  materials: 'Um pião e um barbante',
-  players: '1 ou mais',
-  age: 'A partir de 5 anos',
-  benefits: [
-    'Coordenação motora',
-    'Concentração',
-    'Paciência',
-    'Habilidade manual',
-  ],
-},
-
+  {
+    name: 'Pião',
+    icon: '◎',
+    image: '/imagens/piao.png',
+    color: 'orange',
+    category: ['Coordenação'],
+    desc: 'Uma brincadeira clássica que desafia a habilidade e a concentração.',
+    how: 'Enrole o barbante ao redor do pião e puxe com firmeza para fazê-lo girar. Tente mantê-lo girando pelo maior tempo possível.',
+    materials: 'Um pião e um barbante',
+    players: '1 ou mais',
+    age: 'A partir de 5 anos',
+    benefits: [
+      'Coordenação motora',
+      'Concentração',
+      'Paciência',
+      'Habilidade manual',
+    ],
+  },
   {
     name: 'Bolinha de gude',
-    icon: '◎',
+    icon: '⚫',
     image: '/imagens/bolinha-de-gude.png',
     color: 'orange',
-    category: ['Coordenação', 'Em Grupo'],
+    category: ['Coordenação', 'Habilidade'],
     desc: 'Uma brincadeira clássica que testa a pontaria e a precisão dos jogadores.',
     how: 'Desenhe um círculo no chão e coloque algumas bolinhas de gude dentro. Cada jogador deve tentar acertar as bolinhas com a sua própria bolinha, usando os dedos.',
     materials: 'Bolinhas de gude e giz',
@@ -144,8 +142,7 @@ export const games: Game[] = [
       'Coordenação motora',
       'Concentração',
       'Precisão',
-      'Raciocínio'
-    ]
-  }
+      'Raciocínio',
+    ],
+  },
 ];
-
