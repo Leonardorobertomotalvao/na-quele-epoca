@@ -1535,66 +1535,368 @@ footer {
     margin-top: 16px;
   }
 }
+
 /* ============================================================
    MODO ESCURO — NA MINHA ÉPOCA
    ============================================================ */
 
 /*
- * Quando o tema escuro estiver ativado,
- * estas cores serão aplicadas ao site.
+ * O tema escuro é ativado pelo next-themes,
+ * adicionando a classe "dark" no elemento html.
+ *
+ * Todas as cores abaixo foram adaptadas
+ * para manter o site bonito e legível.
  */
+
+
+/* ============================================================
+   1. CORES PRINCIPAIS
+   ============================================================ */
 
 .dark {
-  /* Fundo principal do site */
   --background: #121827;
-
-  /* Cor principal dos textos */
   --foreground: #f1f5f9;
 
-  /* Fundo dos cartões */
   --card: #1e293b;
-
-  /* Texto dos cartões */
   --card-foreground: #f1f5f9;
 
-  /* Fundo dos campos e elementos secundários */
   --secondary: #273449;
-
-  /* Texto secundário */
   --muted-foreground: #cbd5e1;
 
-  /* Bordas */
   --border: #334155;
+
+  --ink: #f1f5f9;
+  --muted: #cbd5e1;
+  --white: #1e293b;
 }
 
-/*
- * Aplica o fundo escuro ao corpo da página.
- */
+
+/* ============================================================
+   2. FUNDO PRINCIPAL DO SITE
+   ============================================================ */
+
 .dark body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background: #121827;
+  color: #f1f5f9;
 }
 
-/*
- * Fundo escuro para cartões e áreas principais.
- */
-.dark .card,
-.dark .game-card,
-.dark .glass-card {
-  background-color: var(--card);
-  color: var(--card-foreground);
+
+/* ============================================================
+   3. CABEÇALHO
+   ============================================================ */
+
+.dark .site-header {
+  background: #0b3d32;
+  color: #ffffff;
 }
 
-/*
- * Textos secundários ficam mais claros.
- */
-.dark .text-muted {
-  color: var(--muted-foreground);
+.dark .nav a {
+  color: #e2e8f0;
 }
 
+.dark .nav a:first-child,
+.dark .nav a:hover {
+  color: #ffe15b;
+}
+
+.dark .search-box {
+  background: #25334a;
+  color: #cbd5e1;
+}
+
+.dark .search-box input {
+  color: #f1f5f9;
+}
+
+.dark .search-box input::placeholder {
+  color: #94a3b8;
+}
+
+
+/* ============================================================
+   4. HERO
+   ============================================================ */
+
 /*
- * Bordas adaptadas ao tema escuro.
+ * Mantém o estilo colorido do site,
+ * mas escurece um pouco o fundo.
  */
-.dark .border {
-  border-color: var(--border);
+
+.dark .hero {
+  background: #087b70;
+}
+
+.dark .hero-text {
+  color: #e2f8f5;
+}
+
+
+/* ============================================================
+   5. SEÇÕES DE CONTEÚDO
+   ============================================================ */
+
+.dark .content-section,
+.dark .games-section,
+.dark .about-section {
+  background: #121827;
+  color: #f1f5f9;
+}
+
+.dark .section-heading h2,
+.dark .about-section h2 {
+  color: #f8fafc;
+}
+
+.dark .eyebrow.dark {
+  color: #a8c0c0;
+}
+
+.dark .heading-helper {
+  color: #cbd5e1;
+}
+
+
+/* ============================================================
+   6. CATEGORIAS
+   ============================================================ */
+
+.dark .category {
+  background: #25334a;
+  color: #f1f5f9;
+  box-shadow: 0 3px 0 #111827;
+}
+
+.dark .category:hover,
+.dark .category.active {
+  background: #b89628;
+  color: #ffffff;
+  border-color: #e0b936;
+}
+
+.dark .category small {
+  color: #cbd5e1;
+}
+
+.dark .category-arrow {
+  color: #dbeafe;
+}
+
+
+/* ============================================================
+   7. CARDS DAS BRINCADEIRAS
+   ============================================================ */
+
+.dark .game-card {
+  background: #1e293b;
+  color: #f1f5f9;
+  box-shadow: 0 6px 0 #0b1220;
+}
+
+.dark .game-card:hover {
+  box-shadow: 0 10px 0 #0b1220;
+}
+
+.dark .game-body h3 {
+  color: #f8fafc;
+}
+
+.dark .game-body p {
+  color: #cbd5e1;
+}
+
+.dark .game-label {
+  background: #ffffffbb;
+  color: #172033;
+}
+
+.dark .result-count {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.dark .empty {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.dark .empty h3 {
+  color: #f8fafc;
+}
+
+
+/* ============================================================
+   8. SEÇÃO DE MEMÓRIAS
+   ============================================================ */
+
+.dark .memory-section {
+  background: #0c5c49;
+  color: #ffffff;
+}
+
+.dark .memory-copy p:not(.eyebrow) {
+  color: #d2f7e9;
+}
+
+.dark .memory-card {
+  background: #25334a;
+  color: #f8fafc;
+  box-shadow: 10px 12px 0 #064333;
+}
+
+.dark .memory-card small {
+  color: #cbd5e1;
+}
+
+.dark .rotate-right {
+  background: #b89628;
+}
+
+
+/* ============================================================
+   9. SOBRE O PROJETO
+   ============================================================ */
+
+.dark .about-section {
+  background: #121827;
+  color: #f1f5f9;
+}
+
+.dark .about-section p:last-child {
+  color: #cbd5e1;
+}
+
+
+/* ============================================================
+   10. RODAPÉ
+   ============================================================ */
+
+.dark footer {
+  background: #061f1a;
+  color: #d2f7e9;
+}
+
+.dark .footer-main > p {
+  color: #a8d8c7;
+}
+
+.dark .footer-main nav {
+  color: #d7f8e9;
+}
+
+.dark .footer-bottom {
+  color: #9ccabb;
+}
+
+
+/* ============================================================
+   11. MODAL — JANELA DE DETALHES
+   ============================================================ */
+
+/*
+ * Esta é a parte mais importante para corrigir
+ * o problema que apareceu na sua imagem.
+ */
+
+
+/* Fundo atrás da janela */
+
+.dark .modal-backdrop {
+  background: #020617cc;
+}
+
+
+/* Caixa principal do modal */
+
+.dark .modal {
+  background: #172033;
+  color: #f1f5f9;
+  box-shadow: 0 20px 60px #00000088;
+}
+
+
+/* Botão de fechar */
+
+.dark .modal-close {
+  background: #ffffffcc;
+  color: #172033;
+}
+
+
+/* Conteúdo interno */
+
+.dark .modal-content {
+  background: #172033;
+  color: #f1f5f9;
+}
+
+
+/* Título da brincadeira */
+
+.dark .modal-content h2 {
+  color: #ffffff;
+}
+
+
+/* Descrição da brincadeira */
+
+.dark .modal-desc {
+  color: #e2e8f0;
+}
+
+
+/* Linhas separadoras */
+
+.dark .modal-facts {
+  border-top-color: #475569;
+}
+
+.dark .benefits {
+  border-top-color: #475569;
+}
+
+
+/* Títulos das informações */
+
+.dark .modal-facts small,
+.dark .benefits > small {
+  color: #a8f0d2;
+}
+
+
+/* Textos das informações */
+
+.dark .modal-facts p {
+  color: #e2e8f0;
+}
+
+
+/* Benefícios */
+
+.dark .benefits span {
+  background: #294b3a;
+  color: #d2f7e9;
+}
+
+
+/* Botão fechar detalhes */
+
+.dark .modal-button {
+  background: #ff7541;
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   12. ACESSIBILIDADE — FOCO VISÍVEL
+   ============================================================ */
+
+/*
+ * Ajuda quem navega usando teclado.
+ */
+
+.dark button:focus-visible,
+.dark a:focus-visible,
+.dark input:focus-visible {
+  outline: 3px solid #ffe15b;
+  outline-offset: 3px;
 }
