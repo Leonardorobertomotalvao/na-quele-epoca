@@ -1535,3 +1535,66 @@ footer {
     margin-top: 16px;
   }
 }
+/* ============================================================
+   MODO ESCURO — NA MINHA ÉPOCA
+   ============================================================ */
+
+/*
+ * Quando o tema escuro estiver ativado,
+ * estas cores serão aplicadas ao site.
+ */
+
+.dark {
+  /* Fundo principal do site */
+  --background: #121827;
+
+  /* Cor principal dos textos */
+  --foreground: #f1f5f9;
+
+  /* Fundo dos cartões */
+  --card: #1e293b;
+
+  /* Texto dos cartões */
+  --card-foreground: #f1f5f9;
+
+  /* Fundo dos campos e elementos secundários */
+  --secondary: #273449;
+
+  /* Texto secundário */
+  --muted-foreground: #cbd5e1;
+
+  /* Bordas */
+  --border: #334155;
+}
+
+/*
+ * Aplica o fundo escuro ao corpo da página.
+ */
+.dark body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/*
+ * Fundo escuro para cartões e áreas principais.
+ */
+.dark .card,
+.dark .game-card,
+.dark .glass-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+/*
+ * Textos secundários ficam mais claros.
+ */
+.dark .text-muted {
+  color: var(--muted-foreground);
+}
+
+/*
+ * Bordas adaptadas ao tema escuro.
+ */
+.dark .border {
+  border-color: var(--border);
+}
