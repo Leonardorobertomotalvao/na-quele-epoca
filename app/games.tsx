@@ -144,7 +144,7 @@ export const games: Game[] = [
     'Concentração',
     'Precisão',
     'Raciocínio',
-  ],
-},
+   ],
+ },
 ];
 
