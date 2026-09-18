@@ -99,51 +99,12 @@ snapshots:
       '@pnpm/exe.win32-x64': 12.3.4
 
 ---
-# ============================================================
-# pnpm-lock.yaml
-# ============================================================
-# Este arquivo é gerado automaticamente pelo pnpm.
-#
-# Ele registra as versões exatas das dependências instaladas,
-# garantindo que o projeto utilize versões consistentes em
-# diferentes computadores e ambientes.
-#
-# PRINCIPAIS SEÇÕES:
-#
-# - lockfileVersion:
-#   Versão do formato utilizado pelo arquivo de lock.
-#
-# - settings:
-#   Configurações usadas pelo pnpm ao resolver dependências.
-#
-# - importers:
-#   Dependências declaradas diretamente no projeto.
-#
-# - packages:
-#   Pacotes e versões resolvidos pelo pnpm, incluindo hashes
-#   de integridade, engines, dependências opcionais e peers.
-#
-# - snapshots:
-#   Relações finais entre pacotes e suas dependências resolvidas.
-#
-# IMPORTANTE:
-# Não edite manualmente as versões, integridades ou relações
-# deste arquivo. Para atualizar dependências, utilize comandos
-# como `pnpm install` ou `pnpm update`.
-#
-# Os comentários abaixo são explicativos. O conteúdo original
-# do lockfile foi preservado.
-# ============================================================
 lockfileVersion: '9.0'
 
-
-# Configurações gerais do pnpm.
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-
-# Dependências declaradas diretamente pelo projeto.
 importers:
 
   .:
@@ -166,6 +127,9 @@ importers:
       next:
         specifier: 16.3.3
         version: 16.3.3(@babel/core@7.29.7)(@types/node@24.10.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19
         version: 19.2.4
@@ -204,8 +168,6 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
-
-# Catálogo de pacotes resolvidos e suas informações técnicas.
 packages:
 
   '@alloc/quick-lru@5.2.0':
@@ -1538,6 +1500,12 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
   next@16.3.3:
     resolution: {integrity: sha512-tuRTx1nQ/yVw83cwJBo9F+njGUgMn3UHQycreWHB8XsStvvAh1AthbI8/4IpKnFaF58F+iSiHejYOlMQ/eq83g==}
     engines: {node: '>=20.9.0'}
@@ -1999,8 +1967,6 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-
-# Estado final das dependências e relações entre pacotes.
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
@@ -3162,6 +3128,11 @@ snapshots:
   nanoid@3.3.16: {}
 
   negotiator@1.0.0: {}
+
+  next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   next@16.3.3(@babel/core@7.29.7)(@types/node@24.10.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:

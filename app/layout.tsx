@@ -34,6 +34,7 @@ import { Analytics } from '@vercel/analytics/next'
  * Importa o componente para voltar ao topo da página.
  */
 import ScrollToTop from '../components/ui/ScrollToTop'
+import { Providers } from './providers'
 
 /*
  * Importa os tipos Metadata e Viewport do Next.js.
@@ -184,6 +185,7 @@ export const viewport: Viewport = {
 }
 
 
+
 /* ============================================================
    4. LAYOUT PRINCIPAL DA APLICAÇÃO
    ============================================================ */
@@ -214,12 +216,11 @@ export default function RootLayout({
     /*
      * Define o idioma principal do site como português do Brasil.
      *
-     * Isso ajuda:
-     * - Leitores de tela.
-     * - Mecanismos de busca.
-     * - Ferramentas de acessibilidade.
+     * suppressHydrationWarning:
+     * Permite que o next-themes altere o tema do HTML
+     * sem gerar avisos de hidratação no Next.js.
      */
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       {/*
        * Corpo principal da página.
        *
@@ -227,24 +228,34 @@ export default function RootLayout({
        * das fontes quando o Tailwind CSS está configurado.
        */}
       <body className="antialiased">
-        {/*
-         * Renderiza o conteúdo das páginas dentro do layout.
-         *
-         * Tudo que estiver dentro deste RootLayout será
-         * exibido neste ponto.
-         */}
-        {children}
 
         {/*
-         * Carrega o Analytics somente quando o projeto
-         * está rodando em ambiente de produção.
+         * Providers controla o tema claro e escuro
+         * de toda a aplicação.
          */}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Providers>
 
-        {/*
-         * Renderiza o botão flutuante para voltar ao topo.
-         */}
-        <ScrollToTop />
+          {/*
+           * Renderiza o conteúdo das páginas dentro do layout.
+           *
+           * Tudo que estiver dentro deste RootLayout será
+           * exibido neste ponto.
+           */}
+          {children}
+
+          {/*
+           * Carrega o Analytics somente quando o projeto
+           * está rodando em ambiente de produção.
+           */}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+
+          {/*
+           * Renderiza o botão flutuante para voltar ao topo.
+           */}
+          <ScrollToTop />
+
+        </Providers>
+
       </body>
     </html>
   )
