@@ -109,9 +109,8 @@ export const games: Game[] = [
       'Coordenação',
     ],
   },
-
-{
-  name: 'Pião',
+  {
+    name: 'Pião',
   icon: '◎',
   image: '/imagens/piao.png',
   color: 'orange',
