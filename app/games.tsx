@@ -131,7 +131,7 @@ export const games: Game[] = [
 {
   name: 'Bolinha de gude',
   icon: '●',
-  image: '/imagens/bolinha de gude.png',
+  image: '/imagens/bolinha-de-gude.png',
   color: 'orange',
   category: ['Coordenação',],
   desc: 'Uma brincadeira clássica que testa a pontaria e a precisão dos jogadores.',
