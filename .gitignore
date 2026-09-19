@@ -77,3 +77,9 @@ node_modules
 
 # Arquivo de metadados criado pelo macOS
 .DS_Store
+
+/generated/prisma
+.env
+.agents/
+.claude/
+.windsurf/

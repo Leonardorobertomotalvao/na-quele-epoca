@@ -18,3 +18,6 @@ minimumReleaseAgeExclude:
   # Permite o pacote principal "next" sem aplicar a idade mÃ­nima.
   - next
 
+allowBuilds:
+  '@prisma/engines': false
+  prisma: false

@@ -22,10 +22,12 @@ import {
   Search,
   Sparkles,
   Users,
+  UserRound,
   X,
 } from 'lucide-react'
 import { games } from './games'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+
 /**
  * ============================================================
  * TIPOS
@@ -170,6 +172,16 @@ export default function Page() {
 
             {/* Botão de acessibilidade: alterna entre modo claro e escuro. */}
             <ThemeToggle />
+
+            {/* Botão de conta/login */}
+            <a
+              href="/cadastro"
+              className="account-button"
+              aria-label="Entrar ou criar uma conta"
+              title="Entrar ou criar uma conta"
+            >
+              <UserRound />
+            </a>
 
             <button
               className="menu-button"
@@ -470,7 +482,9 @@ export default function Page() {
             brasileiras.
           </span>
 
-          <span>© Na Minha Época — Feito em colaboraçao com a comunidade</span>
+          <span>
+            © Na Minha Época — Feito em colaboraçao com a comunidade
+          </span>
         </div>
       </footer>
 
