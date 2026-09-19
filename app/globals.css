@@ -2623,3 +2623,180 @@ footer {
     font-size: 32px;
   }
 }
+
+/* ============================================================
+   AVATAR DA CONTA — ESTILO YOUTUBE
+   ============================================================ */
+
+.account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.account-avatar {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.account-avatar:hover {
+  opacity: 0.85;
+}
+
+/* Ícone enquanto carrega ou quando não existe foto */
+.account-button {
+  border-radius: 50%;
+}
+
+.account-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ============================================================
+   MENU DA CONTA
+   ============================================================ */
+
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  padding: 14px;
+  background: var(--white);
+  border: 1px solid rgba(21, 52, 59, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(21, 52, 59, 0.18);
+  z-index: 1000;
+  animation: accountMenuIn 0.15s ease;
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(21, 52, 59, 0.1);
+}
+
+.account-info > img,
+.account-info > svg {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+}
+
+.account-info > img {
+  object-fit: cover;
+}
+
+.account-info > svg {
+  padding: 9px;
+  background: rgba(22, 201, 120, 0.12);
+  color: var(--dark-green);
+}
+
+.account-info div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.account-info strong {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-info span {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-logout {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.account-logout:hover {
+  background: rgba(21, 52, 59, 0.07);
+}
+
+@keyframes accountMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   MODO ESCURO
+   ============================================================ */
+
+.dark .account-menu {
+  background: #17363d;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.dark .account-info {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .account-info strong {
+  color: #ffffff;
+}
+
+.dark .account-info span {
+  color: #b9cbcf;
+}
+
+.dark .account-logout {
+  color: #ffffff;
+}
+
+.dark .account-logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+}

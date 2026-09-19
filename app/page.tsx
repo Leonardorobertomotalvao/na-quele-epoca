@@ -25,8 +25,10 @@ import {
   UserRound,
   X,
 } from 'lucide-react'
+
 import { games } from './games'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { authClient } from '@/lib/auth-client'
 
 /**
  * ============================================================
@@ -88,6 +90,13 @@ export default function Page() {
   const [category, setCategory] = useState('Todas')
   const [selected, setSelected] = useState<Game | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+
+  // ==========================================================
+  // CONTA / AUTENTICAÇÃO
+  // ==========================================================
+
+  const { data: session, isPending } = authClient.useSession()
+  const [accountOpen, setAccountOpen] = useState(false)
 
   /**
    * Filtra as brincadeiras pela categoria e pela pesquisa.
@@ -173,22 +182,102 @@ export default function Page() {
             {/* Botão de acessibilidade: alterna entre modo claro e escuro. */}
             <ThemeToggle />
 
-            {/* Botão de conta/login */}
-            <a
-              href="/cadastro"
-              className="account-button"
-              aria-label="Entrar ou criar uma conta"
-              title="Entrar ou criar uma conta"
-            >
-              <UserRound />
-            </a>
+            {/* ==================================================
+                CONTA / LOGIN
+                ================================================== */}
+
+            {isPending ? (
+              <div
+                className="account-button"
+                aria-label="Carregando conta"
+                title="Carregando conta"
+              >
+                <UserRound />
+              </div>
+            ) : session?.user ? (
+              <div className="account-wrapper">
+                <button
+                  type="button"
+                  className="account-button account-avatar"
+                  aria-label="Abrir conta"
+                  title={session.user.name || 'Minha conta'}
+                  onClick={() =>
+                    setAccountOpen((value) => !value)
+                  }
+                >
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={
+                        session.user.name ||
+                        'Foto do usuário'
+                      }
+                    />
+                  ) : (
+                    <UserRound />
+                  )}
+                </button>
+
+                {accountOpen && (
+                  <div className="account-menu">
+                    <div className="account-info">
+                      {session.user.image ? (
+                        <img
+                          src={session.user.image}
+                          alt={
+                            session.user.name ||
+                            'Foto do usuário'
+                          }
+                        />
+                      ) : (
+                        <UserRound />
+                      )}
+
+                      <div>
+                        <strong>
+                          {session.user.name || 'Usuário'}
+                        </strong>
+
+                        <span>
+                          {session.user.email}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="account-logout"
+                      onClick={async () => {
+                        await authClient.signOut()
+                        setAccountOpen(false)
+                      }}
+                    >
+                      Sair da conta
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <a
+                href="/cadastro"
+                className="account-button"
+                aria-label="Entrar ou criar uma conta"
+                title="Entrar ou criar uma conta"
+              >
+                <UserRound />
+              </a>
+            )}
 
             <button
               className="menu-button"
               type="button"
-              onClick={() => setMenuOpen((value) => !value)}
+              onClick={() =>
+                setMenuOpen((value) => !value)
+              }
               aria-label={
-                menuOpen ? 'Fechar menu' : 'Abrir menu'
+                menuOpen
+                  ? 'Fechar menu'
+                  : 'Abrir menu'
               }
             >
               {menuOpen ? <X /> : <Menu />}
@@ -219,7 +308,10 @@ export default function Page() {
               divertida e segura.
             </p>
 
-            <a className="hero-cta" href="#brincadeiras">
+            <a
+              className="hero-cta"
+              href="#brincadeiras"
+            >
               Explorar brincadeiras
               <ArrowRight />
             </a>
@@ -243,14 +335,22 @@ export default function Page() {
               className="hero-mascote"
             />
 
-            <span className="hero-star star-one">✦</span>
-            <span className="hero-star star-two">✦</span>
+            <span className="hero-star star-one">
+              ✦
+            </span>
+
+            <span className="hero-star star-two">
+              ✦
+            </span>
           </div>
         </div>
       </section>
 
       {/* CATEGORIAS */}
-      <section className="content-section" id="categorias">
+      <section
+        className="content-section"
+        id="categorias"
+      >
         <div className="section-heading">
           <div>
             <p className="eyebrow dark">
@@ -269,32 +369,37 @@ export default function Page() {
         </div>
 
         <div className="category-list">
-          {categories.map(({ name, icon: Icon, detail }) => (
-            <button
-              key={name}
-              type="button"
-              className={`category ${
-                category === name ? 'active' : ''
-              }`}
-              onClick={() => setCategory(name)}
-            >
-              <span className="category-icon">
-                <Icon />
-              </span>
+          {categories.map(
+            ({ name, icon: Icon, detail }) => (
+              <button
+                key={name}
+                type="button"
+                className={`category ${
+                  category === name ? 'active' : ''
+                }`}
+                onClick={() => setCategory(name)}
+              >
+                <span className="category-icon">
+                  <Icon />
+                </span>
 
-              <span>
-                <strong>{name}</strong>
-                <small>{detail}</small>
-              </span>
+                <span>
+                  <strong>{name}</strong>
+                  <small>{detail}</small>
+                </span>
 
-              <ChevronDown className="category-arrow" />
-            </button>
-          ))}
+                <ChevronDown className="category-arrow" />
+              </button>
+            ),
+          )}
         </div>
       </section>
 
       {/* BRINCADEIRAS */}
-      <section className="games-section" id="brincadeiras">
+      <section
+        className="games-section"
+        id="brincadeiras"
+      >
         <div className="section-heading games-heading">
           <div>
             <p className="eyebrow dark">
@@ -315,8 +420,13 @@ export default function Page() {
 
         <div className="game-grid">
           {filtered.map((game) => (
-            <article className="game-card" key={game.name}>
-              <div className={`game-visual ${game.color}`}>
+            <article
+              className="game-card"
+              key={game.name}
+            >
+              <div
+                className={`game-visual ${game.color}`}
+              >
                 {game.image ? (
                   <img
                     src={game.image}
@@ -361,11 +471,13 @@ export default function Page() {
           <div className="empty">
             <Search />
 
-            <h3>Nenhuma brincadeira encontrada.</h3>
+            <h3>
+              Nenhuma brincadeira encontrada.
+            </h3>
 
             <p>
-              Tente buscar por outro nome ou escolha a
-              categoria Todas.
+              Tente buscar por outro nome ou escolha
+              a categoria Todas.
             </p>
 
             <button
@@ -396,10 +508,10 @@ export default function Page() {
           </h2>
 
           <p>
-            Tem coisas que a gente aprende para sempre: o valor
-            de uma amizade, a alegria de correr sem hora para
-            parar e a imaginação que transforma qualquer espaço
-            em aventura.
+            Tem coisas que a gente aprende para sempre:
+            o valor de uma amizade, a alegria de correr
+            sem hora para parar e a imaginação que
+            transforma qualquer espaço em aventura.
           </p>
 
           <a href="#sobre">
@@ -411,8 +523,12 @@ export default function Page() {
         <div className="memory-cards">
           <div className="memory-card rotate-left">
             <span>“</span>
-            <p>Quem nunca brincou de esconde-esconde?</p>
-            <small>Uma lembrança de cada vez</small>
+            <p>
+              Quem nunca brincou de esconde-esconde?
+            </p>
+            <small>
+              Uma lembrança de cada vez
+            </small>
           </div>
 
           <div className="memory-card rotate-right">
@@ -426,7 +542,10 @@ export default function Page() {
       </section>
 
       {/* SOBRE */}
-      <section className="about-section" id="sobre">
+      <section
+        className="about-section"
+        id="sobre"
+      >
         <div className="about-icon">
           <BookOpen />
         </div>
@@ -441,10 +560,10 @@ export default function Page() {
 
           <p>
             O <b>Na Minha Época</b> nasceu para resgatar
-            brincadeiras que atravessaram gerações. Em um mundo
-            cada vez mais digital, queremos lembrar que brincar
-            também é correr, pular, imaginar, criar e
-            compartilhar momentos.
+            brincadeiras que atravessaram gerações. Em
+            um mundo cada vez mais digital, queremos
+            lembrar que brincar também é correr, pular,
+            imaginar, criar e compartilhar momentos.
           </p>
         </div>
       </section>
@@ -452,7 +571,10 @@ export default function Page() {
       {/* RODAPÉ */}
       <footer>
         <div className="footer-main">
-          <a className="brand footer-brand" href="#inicio">
+          <a
+            className="brand footer-brand"
+            href="#inicio"
+          >
             <span className="brand-mark">✳</span>
 
             <span>
@@ -470,20 +592,25 @@ export default function Page() {
 
           <nav>
             <a href="#inicio">Início</a>
-            <a href="#brincadeiras">Brincadeiras</a>
-            <a href="#categorias">Categorias</a>
+            <a href="#brincadeiras">
+              Brincadeiras
+            </a>
+            <a href="#categorias">
+              Categorias
+            </a>
             <a href="#sobre">Sobre</a>
           </nav>
         </div>
 
         <div className="footer-bottom">
           <span>
-            Projeto educativo sobre brincadeiras tradicionais e culturais
-            brasileiras.
+            Projeto educativo sobre brincadeiras
+            tradicionais e culturais brasileiras.
           </span>
 
           <span>
-            © Na Minha Época — Feito em colaboraçao com a comunidade
+            © Na Minha Época — Feito em colaboraçao
+            com a comunidade
           </span>
         </div>
       </footer>
@@ -494,7 +621,9 @@ export default function Page() {
           className="modal-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+            if (
+              event.target === event.currentTarget
+            ) {
               setSelected(null)
             }
           }}
@@ -544,9 +673,13 @@ export default function Page() {
                 VAMOS BRINCAR
               </p>
 
-              <h2 id="modal-title">{selected.name}</h2>
+              <h2 id="modal-title">
+                {selected.name}
+              </h2>
 
-              <p className="modal-desc">{selected.desc}</p>
+              <p className="modal-desc">
+                {selected.desc}
+              </p>
 
               <div className="modal-facts">
                 <div>
@@ -574,12 +707,14 @@ export default function Page() {
                 <small>O QUE DESENVOLVE</small>
 
                 <div>
-                  {selected.benefits.map((benefit) => (
-                    <span key={benefit}>
-                      <Check />
-                      {benefit}
-                    </span>
-                  ))}
+                  {selected.benefits.map(
+                    (benefit) => (
+                      <span key={benefit}>
+                        <Check />
+                        {benefit}
+                      </span>
+                    ),
+                  )}
                 </div>
               </div>
 
