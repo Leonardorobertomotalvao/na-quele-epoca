@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import {
+  ArrowLeft,
   Heart,
   LoaderCircle,
   MessageCircle,
@@ -18,6 +19,10 @@ import {
 import { authClient } from "@/lib/auth-client";
 
 import "./comunidade.css";
+
+/* ============================================================
+   TIPOS
+   ============================================================ */
 
 type CommunityComment = {
   id: string;
@@ -52,6 +57,10 @@ type CommunityPost = {
   likedByMe: boolean;
 };
 
+/* ============================================================
+   PÁGINA
+   ============================================================ */
+
 export default function ComunidadePage() {
   const {
     data: session,
@@ -60,13 +69,19 @@ export default function ComunidadePage() {
 
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [content, setContent] = useState("");
+
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [publishing, setPublishing] = useState(false);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  // Comentários
-  const [openComments, setOpenComments] = useState<string | null>(null);
+  /* ==========================================================
+     COMENTÁRIOS
+     ========================================================== */
+
+  const [openComments, setOpenComments] =
+    useState<string | null>(null);
 
   const [comments, setComments] =
     useState<Record<string, CommunityComment[]>>({});
@@ -80,27 +95,33 @@ export default function ComunidadePage() {
   const [sendingComment, setSendingComment] =
     useState<string | null>(null);
 
-  // Curtidas
+  /* ==========================================================
+     CURTIDAS
+     ========================================================== */
+
   const [likingPost, setLikingPost] =
     useState<string | null>(null);
 
-  /**
-   * ============================================================
-   * CARREGAR POSTS
-   * ============================================================
-   */
+  /* ==========================================================
+     CARREGAR POSTS
+     ========================================================== */
 
   const loadPosts = useCallback(async () => {
     try {
       setLoadingPosts(true);
       setError("");
 
-      const response = await fetch("/api/comunidade/posts", {
-        cache: "no-store",
-      });
+      const response = await fetch(
+        "/api/comunidade/posts",
+        {
+          cache: "no-store",
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Erro ao carregar publicações.");
+        throw new Error(
+          "Erro ao carregar publicações."
+        );
       }
 
       const data = await response.json();
@@ -109,7 +130,9 @@ export default function ComunidadePage() {
     } catch (err) {
       console.error(err);
 
-      setError("Não foi possível carregar as publicações.");
+      setError(
+        "Não foi possível carregar as publicações."
+      );
     } finally {
       setLoadingPosts(false);
     }
@@ -119,11 +142,9 @@ export default function ComunidadePage() {
     loadPosts();
   }, [loadPosts]);
 
-  /**
-   * ============================================================
-   * CRIAR POST
-   * ============================================================
-   */
+  /* ==========================================================
+     CRIAR POST
+     ========================================================== */
 
   async function handlePublish(
     event: FormEvent<HTMLFormElement>
@@ -134,37 +155,47 @@ export default function ComunidadePage() {
     setMessage("");
 
     if (!session?.user) {
-      setError("Você precisa estar logado para publicar.");
+      setError(
+        "Você precisa estar logado para publicar."
+      );
+
       return;
     }
 
     const text = content.trim();
 
     if (!text) {
-      setError("Escreva alguma coisa antes de publicar.");
+      setError(
+        "Escreva alguma coisa antes de publicar."
+      );
+
       return;
     }
 
     try {
       setPublishing(true);
 
-      const response = await fetch("/api/comunidade/posts", {
-        method: "POST",
+      const response = await fetch(
+        "/api/comunidade/posts",
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        body: JSON.stringify({
-          content: text,
-        }),
-      });
+          body: JSON.stringify({
+            content: text,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Não foi possível publicar."
+          data.error ||
+            "Não foi possível publicar."
         );
       }
 
@@ -175,7 +206,9 @@ export default function ComunidadePage() {
 
       setContent("");
 
-      setMessage("Publicação criada com sucesso!");
+      setMessage(
+        "Publicação criada com sucesso!"
+      );
     } catch (err) {
       setError(
         err instanceof Error
@@ -187,18 +220,19 @@ export default function ComunidadePage() {
     }
   }
 
-  /**
-   * ============================================================
-   * CURTIR / DESCURTIR POST
-   * ============================================================
-   */
+  /* ==========================================================
+     CURTIR / DESCURTIR
+     ========================================================== */
 
   async function handleLike(postId: string) {
     setError("");
     setMessage("");
 
     if (!session?.user) {
-      setError("Você precisa estar logado para curtir.");
+      setError(
+        "Você precisa estar logado para curtir."
+      );
+
       return;
     }
 
@@ -256,13 +290,13 @@ export default function ComunidadePage() {
     }
   }
 
-  /**
-   * ============================================================
-   * ABRIR / FECHAR COMENTÁRIOS
-   * ============================================================
-   */
+  /* ==========================================================
+     ABRIR / FECHAR COMENTÁRIOS
+     ========================================================== */
 
-  async function toggleComments(postId: string) {
+  async function toggleComments(
+    postId: string
+  ) {
     if (openComments === postId) {
       setOpenComments(null);
       return;
@@ -270,7 +304,6 @@ export default function ComunidadePage() {
 
     setOpenComments(postId);
 
-    // Se já carregamos antes, não busca novamente.
     if (comments[postId]) {
       return;
     }
@@ -311,11 +344,9 @@ export default function ComunidadePage() {
     }
   }
 
-  /**
-   * ============================================================
-   * CRIAR COMENTÁRIO
-   * ============================================================
-   */
+  /* ==========================================================
+     CRIAR COMENTÁRIO
+     ========================================================== */
 
   async function handleComment(
     event: FormEvent<HTMLFormElement>,
@@ -326,11 +357,15 @@ export default function ComunidadePage() {
     setError("");
 
     if (!session?.user) {
-      setError("Você precisa estar logado para comentar.");
+      setError(
+        "Você precisa estar logado para comentar."
+      );
+
       return;
     }
 
-    const text = commentTexts[postId]?.trim() || "";
+    const text =
+      commentTexts[postId]?.trim() || "";
 
     if (!text) {
       return;
@@ -359,7 +394,8 @@ export default function ComunidadePage() {
 
       if (!response.ok) {
         throw new Error(
-          data.error || "Não foi possível comentar."
+          data.error ||
+            "Não foi possível comentar."
         );
       }
 
@@ -385,6 +421,7 @@ export default function ComunidadePage() {
 
                 _count: {
                   ...post._count,
+
                   comments:
                     post._count.comments + 1,
                 },
@@ -403,67 +440,78 @@ export default function ComunidadePage() {
     }
   }
 
-  /**
-   * ============================================================
-   * DATA
-   * ============================================================
-   */
+  /* ==========================================================
+     DATA
+     ========================================================== */
 
   function formatDate(date: string) {
-    return new Intl.DateTimeFormat("pt-BR", {
-      dateStyle: "short",
-      timeStyle: "short",
-    }).format(new Date(date));
+    return new Intl.DateTimeFormat(
+      "pt-BR",
+      {
+        dateStyle: "short",
+        timeStyle: "short",
+      }
+    ).format(new Date(date));
   }
+
+  /* ==========================================================
+     INTERFACE
+     ========================================================== */
 
   return (
     <main className="community-page">
       <section className="community-container">
 
+        {/* VOLTAR */}
+
+        <a
+          href="/"
+          className="community-back"
+        >
+          <ArrowLeft size={18} />
+
+          Voltar para o site
+        </a>
+
         {/* CABEÇALHO */}
 
         <div className="community-heading">
-
           <div className="community-heading-icon">
             <Users size={28} />
           </div>
 
-          <div>
+          <div className="community-heading-copy">
+            <span className="community-label">
+              NOSSA COMUNIDADE
+            </span>
+
             <h1>Comunidade</h1>
 
             <p>
-              Compartilhe brincadeiras, histórias e lembranças
-              da sua época.
+              Compartilhe brincadeiras,
+              histórias e lembranças que
+              fizeram parte da sua época.
             </p>
           </div>
-
         </div>
 
         {/* CRIAR PUBLICAÇÃO */}
 
         <section className="create-post-card">
-
           {sessionLoading ? (
-
             <div className="community-loading-session">
-
               <LoaderCircle
                 className="spin"
                 size={22}
               />
 
               Carregando usuário...
-
             </div>
-
           ) : session?.user ? (
-
             <form onSubmit={handlePublish}>
-
               <div className="create-post-user">
 
                 {session.user.image ? (
-
                   <img
                     src={session.user.image}
                     alt={
@@ -472,38 +520,33 @@ export default function ComunidadePage() {
                     }
                     className="community-avatar"
                   />
-
                 ) : (
-
                   <div className="community-avatar-fallback">
-
                     {session.user.name
                       ?.charAt(0)
                       .toUpperCase() ||
                       "U"}
-
                   </div>
-
                 )}
 
                 <div>
-
                   <strong>
                     {session.user.name}
                   </strong>
 
                   <span>
-                    Compartilhe algo com a comunidade
+                    Compartilhe algo com a
+                    comunidade
                   </span>
-
                 </div>
-
               </div>
 
               <textarea
                 value={content}
                 onChange={(event) =>
-                  setContent(event.target.value)
+                  setContent(
+                    event.target.value
+                  )
                 }
                 placeholder="Qual brincadeira marcou a sua infância?"
                 maxLength={2000}
@@ -511,7 +554,6 @@ export default function ComunidadePage() {
               />
 
               <div className="create-post-footer">
-
                 <span className="character-limit">
                   {content.length}/2000
                 </span>
@@ -523,7 +565,6 @@ export default function ComunidadePage() {
                     !content.trim()
                   }
                 >
-
                   {publishing ? (
                     <>
                       <LoaderCircle
@@ -539,54 +580,77 @@ export default function ComunidadePage() {
                       Publicar
                     </>
                   )}
-
                 </button>
-
               </div>
-
             </form>
-
           ) : (
-
             <div className="community-login-required">
-
               <strong>
-                Entre na sua conta para publicar
+                Entre na sua conta para
+                publicar
               </strong>
 
               <p>
-                Você pode visualizar as publicações, mas precisa
-                estar conectado para participar.
+                Você pode visualizar as
+                publicações, mas precisa
+                estar conectado para
+                participar.
               </p>
 
+              <a href="/cadastro">
+                Entrar ou criar conta
+              </a>
             </div>
-
           )}
-
         </section>
 
+        {/* MENSAGENS */}
+
         {error && (
-          <div className="community-alert error">
+          <div
+            className="community-alert error"
+            role="alert"
+          >
             {error}
           </div>
         )}
 
         {message && (
-          <div className="community-alert success">
+          <div
+            className="community-alert success"
+            role="status"
+          >
             {message}
           </div>
         )}
 
-        {/* FEED */}
+        {/* TÍTULO DO FEED */}
 
         <div className="community-feed-title">
-          <h2>Publicações recentes</h2>
+          <div>
+            <span>
+              MEMÓRIAS DA COMUNIDADE
+            </span>
+
+            <h2>
+              Publicações recentes
+            </h2>
+          </div>
+
+          {!loadingPosts && (
+            <span className="community-post-count">
+              {posts.length}{" "}
+              {posts.length === 1
+                ? "publicação"
+                : "publicações"}
+            </span>
+          )}
         </div>
 
+        {/* FEED */}
+
         {loadingPosts ? (
-
           <div className="community-empty">
-
             <LoaderCircle
               size={28}
               className="spin"
@@ -595,13 +659,9 @@ export default function ComunidadePage() {
             <p>
               Carregando publicações...
             </p>
-
           </div>
-
         ) : posts.length === 0 ? (
-
           <div className="community-empty">
-
             <Users size={42} />
 
             <h3>
@@ -609,58 +669,47 @@ export default function ComunidadePage() {
             </h3>
 
             <p>
-              Seja a primeira pessoa a compartilhar uma lembrança.
+              Seja a primeira pessoa a
+              compartilhar uma lembrança.
             </p>
-
           </div>
-
         ) : (
-
           <div className="community-feed">
-
             {posts.map((post) => (
-
               <article
                 className="community-post"
                 key={post.id}
               >
-
                 {/* AUTOR */}
 
                 <header className="community-post-header">
-
                   {post.author.image ? (
-
                     <img
                       src={post.author.image}
-                      alt={post.author.name}
+                      alt={
+                        post.author.name
+                      }
                       className="community-avatar"
                     />
-
                   ) : (
-
                     <div className="community-avatar-fallback">
-
                       {post.author.name
                         .charAt(0)
                         .toUpperCase()}
-
                     </div>
-
                   )}
 
                   <div className="community-post-author">
-
                     <strong>
                       {post.author.name}
                     </strong>
 
                     <span>
-                      {formatDate(post.createdAt)}
+                      {formatDate(
+                        post.createdAt
+                      )}
                     </span>
-
                   </div>
-
                 </header>
 
                 {/* TEXTO */}
@@ -669,10 +718,9 @@ export default function ComunidadePage() {
                   <p>{post.content}</p>
                 </div>
 
-                {/* CURTIDAS + COMENTÁRIOS */}
+                {/* AÇÕES */}
 
                 <footer className="community-post-footer">
-
                   <button
                     type="button"
                     className={
@@ -687,16 +735,13 @@ export default function ComunidadePage() {
                       likingPost === post.id
                     }
                   >
-
-                    {likingPost === post.id ? (
-
+                    {likingPost ===
+                    post.id ? (
                       <LoaderCircle
                         size={19}
                         className="spin"
                       />
-
                     ) : (
-
                       <Heart
                         size={19}
                         fill={
@@ -705,100 +750,111 @@ export default function ComunidadePage() {
                             : "none"
                         }
                       />
-
                     )}
 
                     {post._count.likes === 1
                       ? "1 curtida"
                       : `${post._count.likes} curtidas`}
-
                   </button>
 
                   <button
                     type="button"
                     className="post-action"
                     onClick={() =>
-                      toggleComments(post.id)
+                      toggleComments(
+                        post.id
+                      )
                     }
                   >
+                    <MessageCircle
+                      size={19}
+                    />
 
-                    <MessageCircle size={19} />
-
-                    {post._count.comments === 1
+                    {post._count.comments ===
+                    1
                       ? "1 comentário"
                       : `${post._count.comments} comentários`}
-
                   </button>
-
                 </footer>
 
-                {/* ÁREA DE COMENTÁRIOS */}
+                {/* COMENTÁRIOS */}
 
-                {openComments === post.id && (
-
+                {openComments ===
+                  post.id && (
                   <div className="comments-section">
 
-                    {loadingComments === post.id ? (
-
+                    {loadingComments ===
+                    post.id ? (
                       <div className="comments-loading">
-
                         <LoaderCircle
                           size={20}
                           className="spin"
                         />
 
-                        Carregando comentários...
-
+                        Carregando
+                        comentários...
                       </div>
-
                     ) : (
-
                       <>
-
                         <div className="comments-list">
-
-                          {(comments[post.id] || []).length === 0 ? (
-
+                          {(comments[
+                            post.id
+                          ] || []).length ===
+                          0 ? (
                             <p className="no-comments">
-                              Nenhum comentário ainda. Seja o primeiro!
+                              Nenhum
+                              comentário ainda.
+                              Seja o primeiro!
                             </p>
-
                           ) : (
-
-                            (comments[post.id] || []).map(
-                              (comment) => (
-
+                            (
+                              comments[
+                                post.id
+                              ] || []
+                            ).map(
+                              (
+                                comment
+                              ) => (
                                 <div
                                   className="comment"
-                                  key={comment.id}
+                                  key={
+                                    comment.id
+                                  }
                                 >
-
-                                  {comment.author.image ? (
-
+                                  {comment
+                                    .author
+                                    .image ? (
                                     <img
-                                      src={comment.author.image}
-                                      alt={comment.author.name}
+                                      src={
+                                        comment
+                                          .author
+                                          .image
+                                      }
+                                      alt={
+                                        comment
+                                          .author
+                                          .name
+                                      }
                                       className="comment-avatar"
                                     />
-
                                   ) : (
-
                                     <div className="comment-avatar comment-avatar-fallback">
-
                                       {comment.author.name
-                                        .charAt(0)
+                                        .charAt(
+                                          0
+                                        )
                                         .toUpperCase()}
-
                                     </div>
-
                                   )}
 
                                   <div className="comment-body">
-
                                     <div className="comment-header">
-
                                       <strong>
-                                        {comment.author.name}
+                                        {
+                                          comment
+                                            .author
+                                            .name
+                                        }
                                       </strong>
 
                                       <span>
@@ -806,130 +862,130 @@ export default function ComunidadePage() {
                                           comment.createdAt
                                         )}
                                       </span>
-
                                     </div>
 
                                     <p>
-                                      {comment.content}
+                                      {
+                                        comment.content
+                                      }
                                     </p>
-
                                   </div>
-
                                 </div>
-
                               )
                             )
-
                           )}
-
                         </div>
 
                         {session?.user ? (
-
                           <form
                             className="comment-form"
-                            onSubmit={(event) =>
+                            onSubmit={(
+                              event
+                            ) =>
                               handleComment(
                                 event,
                                 post.id
                               )
                             }
                           >
-
-                            {session.user.image ? (
-
+                            {session.user
+                              .image ? (
                               <img
-                                src={session.user.image}
+                                src={
+                                  session
+                                    .user
+                                    .image
+                                }
                                 alt={
-                                  session.user.name ||
+                                  session
+                                    .user
+                                    .name ||
                                   "Usuário"
                                 }
                                 className="comment-avatar"
                               />
-
                             ) : (
-
                               <div className="comment-avatar comment-avatar-fallback">
-
                                 {session.user.name
-                                  ?.charAt(0)
+                                  ?.charAt(
+                                    0
+                                  )
                                   .toUpperCase() ||
                                   "U"}
-
                               </div>
-
                             )}
 
                             <input
                               value={
-                                commentTexts[post.id] || ""
+                                commentTexts[
+                                  post.id
+                                ] || ""
                               }
-                              onChange={(event) =>
+                              onChange={(
+                                event
+                              ) =>
                                 setCommentTexts(
-                                  (current) => ({
+                                  (
+                                    current
+                                  ) => ({
                                     ...current,
 
                                     [post.id]:
-                                      event.target.value,
+                                      event
+                                        .target
+                                        .value,
                                   })
                                 )
                               }
                               placeholder="Escreva um comentário..."
-                              maxLength={500}
+                              maxLength={
+                                500
+                              }
                             />
 
                             <button
                               type="submit"
                               disabled={
-                                sendingComment === post.id ||
+                                sendingComment ===
+                                  post.id ||
                                 !commentTexts[
                                   post.id
                                 ]?.trim()
                               }
                               aria-label="Enviar comentário"
                             >
-
-                              {sendingComment === post.id ? (
-
+                              {sendingComment ===
+                              post.id ? (
                                 <LoaderCircle
-                                  size={18}
+                                  size={
+                                    18
+                                  }
                                   className="spin"
                                 />
-
                               ) : (
-
-                                <Send size={18} />
-
+                                <Send
+                                  size={
+                                    18
+                                  }
+                                />
                               )}
-
                             </button>
-
                           </form>
-
                         ) : (
-
                           <p className="comment-login-message">
-                            Entre na sua conta para comentar.
+                            Entre na sua
+                            conta para
+                            comentar.
                           </p>
-
                         )}
-
                       </>
-
                     )}
-
                   </div>
-
                 )}
-
               </article>
-
             ))}
-
           </div>
-
         )}
-
       </section>
     </main>
   );
