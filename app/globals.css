@@ -2997,3 +2997,26 @@ footer {
     right: 10px;
   }
 }
+.search-box {
+  outline: none;
+  border: none;
+}
+
+.search-box:focus,
+.search-box:focus-within {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.search-box input {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.search-box input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
