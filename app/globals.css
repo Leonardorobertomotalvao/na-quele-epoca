@@ -2800,54 +2800,108 @@ footer {
 .dark .account-logout:hover {
   background: rgba(255, 255, 255, 0.08);
 }
-
 /* ============================================================
-   AJUSTE MOBILE FINAL
+   HEADER MOBILE FINAL
    ============================================================ */
 
 @media (max-width: 700px) {
-  /* HEADER */
-  .header-inner {
-    min-height: 62px;
-    padding: 0 10px;
-    gap: 6px;
+  .site-header {
+    padding: 0;
   }
 
+  .header-inner {
+    position: relative;
+
+    width: 100%;
+    min-height: 116px;
+
+    padding: 10px 14px 54px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* LOGO */
   .brand {
-    gap: 4px;
-    font-size: 10px;
+    flex-shrink: 0;
+
+    gap: 5px;
+
+    font-size: 11px;
+    line-height: 1;
   }
 
   .brand b {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .brand-mark {
-    font-size: 21px;
+    font-size: 22px;
   }
 
+  /* ÁREA DOS BOTÕES */
   .header-actions {
-    gap: 5px;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 7px;
+
+    margin-left: auto;
   }
+
+  /* ============================================================
+     PESQUISA EM UMA SEGUNDA LINHA
+     ============================================================ */
 
   .search-box {
+    position: absolute;
+
+    left: 14px;
+    right: 14px;
+    bottom: 10px;
+
     width: auto;
-    max-width: 155px;
-    height: 36px;
-    padding: 0 10px;
+    max-width: none;
+    height: 38px;
+
+    padding: 0 14px;
+
+    border-radius: 12px;
+  }
+
+  .search-box svg {
+    width: 17px;
+    min-width: 17px;
   }
 
   .search-box input {
     min-width: 0;
-    font-size: 10px;
+
+    font-size: 12px;
   }
 
+  /* ============================================================
+     BOTÕES
+     ============================================================ */
+
   .account-button,
-  .account-avatar,
   .menu-button {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+
+    padding: 0;
+  }
+
+  .account-button {
+    display: grid;
+    place-items: center;
   }
 
   .account-button svg,
@@ -2856,107 +2910,60 @@ footer {
     height: 20px;
   }
 
-  /* HERO */
-  .hero-inner {
-    min-height: auto;
-    padding: 42px 16px 24px;
+  .account-avatar {
+    width: 34px;
+    height: 34px;
+
+    overflow: hidden;
+    border-radius: 50%;
   }
 
-  .hero-copy {
-    max-width: 100%;
+  .account-avatar img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
   }
 
-  .eyebrow {
-    margin-bottom: 16px;
-    font-size: 9px;
-    letter-spacing: 0.12em;
+  .menu-button {
+    display: grid;
+    place-items: center;
   }
 
-  .eyebrow span {
-    width: 20px;
-  }
+  /* MENU ABERTO */
+  .nav {
+    display: none;
 
-  h1 {
-    max-width: 520px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
+    position: absolute;
 
-    font-size: clamp(34px, 9vw, 44px);
-    line-height: 1.06;
-  }
-
-  .hero-text {
-    max-width: 500px;
-    margin-bottom: 24px;
-
-    font-size: 15px;
-    line-height: 1.55;
-  }
-
-  .hero-cta {
-    padding: 13px 18px;
-    font-size: 14px;
-  }
-
-  .hero-note {
-    margin-top: 22px;
-    font-size: 11px;
-  }
-
-  /* MASCOTE */
-  .hero-art {
-    min-height: 310px;
-    margin-top: 12px;
-  }
-
-  .hero-mascote {
-    width: min(68vw, 290px);
-    max-width: 290px;
-    margin: 0 auto;
-  }
-
-  /* Decorações */
-  .sun {
-    right: 8%;
-    top: 8%;
-    font-size: 27px;
-  }
-
-  .cloud {
-    transform: scale(0.72);
-  }
-
-  .cloud-one {
+    top: 116px;
     left: 0;
-    top: 25%;
+    right: 0;
+
+    z-index: 1000;
+
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+
+    padding: 20px;
+
+    background: var(--dark-green);
   }
 
-  .cloud-two {
-    right: -5px;
-    top: 70%;
-  }
-
-  .star-one {
-    left: 3%;
-    top: 58%;
-  }
-
-  .star-two {
-    right: 3%;
-    top: 40%;
+  .nav.open {
+    display: flex;
   }
 }
 
-/* Celulares pequenos */
 @media (max-width: 420px) {
   .header-inner {
-    padding: 0 7px;
-    gap: 4px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .brand {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .brand b {
@@ -2964,44 +2971,29 @@ footer {
   }
 
   .brand-mark {
-    font-size: 19px;
+    font-size: 20px;
   }
 
-  .search-box {
-    max-width: 125px;
-    height: 34px;
-  }
-
-  .search-box input {
-    font-size: 9px;
+  .header-actions {
+    gap: 4px;
   }
 
   .account-button,
   .account-avatar,
   .menu-button {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
+    width: 31px;
+    height: 31px;
+    min-width: 31px;
   }
 
-  .hero-inner {
-    padding: 38px 14px 20px;
+  .account-button svg,
+  .menu-button svg {
+    width: 18px;
+    height: 18px;
   }
 
-  h1 {
-    font-size: clamp(32px, 9.5vw, 39px);
-  }
-
-  .hero-text {
-    font-size: 14px;
-  }
-
-  .hero-art {
-    min-height: 280px;
-  }
-
-  .hero-mascote {
-    width: min(66vw, 260px);
-    max-width: 260px;
+  .search-box {
+    left: 10px;
+    right: 10px;
   }
 }
