@@ -3165,16 +3165,20 @@ footer {
 }
 
 /* TEXTO */
-
 .home-community-text {
   flex: 1;
   margin: 0 0 23px;
   color: #3e5b60;
   font-size: 15px;
   line-height: 1.65;
+
   display: -webkit-box;
+
   -webkit-line-clamp: 4;
+  line-clamp: 4;
+
   -webkit-box-orient: vertical;
+
   overflow: hidden;
 }
 
