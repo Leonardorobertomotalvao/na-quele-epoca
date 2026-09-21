@@ -3461,3 +3461,342 @@ footer {
     justify-content: center;
   }
 }
+/* ============================================================
+   CATEGORIA ESPECIAL — BRINQUEDOS CASEIROS / OFICINA
+   ============================================================ */
+
+.home-workshop-feature {
+  position: relative;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  align-items: stretch;
+
+  gap: 28px;
+
+  margin-top: 28px;
+  padding: 30px;
+
+  background:
+    radial-gradient(circle at 86% 20%, #fff0a9 0 0, transparent 29%),
+    linear-gradient(135deg, #0f8b62 0%, #087b55 52%, #066749 100%);
+
+  color: white;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 8px 0 #07533e,
+    0 18px 38px #07583922;
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.home-workshop-feature::before {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background-image:
+    radial-gradient(circle at 15% 18%, #ffffff15 0 3px, transparent 4px),
+    radial-gradient(circle at 78% 72%, #ffffff12 0 4px, transparent 5px);
+
+  background-size: 70px 70px, 92px 92px;
+}
+
+.home-workshop-feature:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 12px 0 #07533e,
+    0 24px 44px #0758392f;
+}
+
+.home-workshop-copy,
+.home-workshop-visual {
+  position: relative;
+  z-index: 1;
+}
+
+.home-workshop-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.home-workshop-badge {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+  padding: 7px 10px;
+
+  background: #ffffff18;
+  color: #e9fff6;
+
+  border: 1px solid #ffffff2c;
+  border-radius: 30px;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+.home-workshop-copy h3 {
+  margin: 0;
+
+  font-family: 'Plus Jakarta Sans';
+  font-size: clamp(30px, 3.2vw, 46px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.home-workshop-copy > p {
+  max-width: 610px;
+
+  margin: 12px 0 17px;
+
+  color: #d8f5ea;
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.home-workshop-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-bottom: 21px;
+}
+
+.home-workshop-tags span {
+  padding: 7px 9px;
+
+  background: #ffffff14;
+
+  border: 1px solid #ffffff20;
+  border-radius: 30px;
+
+  color: #f2fff9;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.home-workshop-cta {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  min-height: 43px;
+
+  padding: 0 15px;
+
+  background: #ffd54f;
+  color: #15343b;
+
+  border-radius: 10px;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  box-shadow: 0 4px 0 #d2a80a;
+}
+
+.home-workshop-feature:hover .home-workshop-cta svg {
+  transform: translateX(3px);
+}
+
+.home-workshop-cta svg {
+  transition: transform 0.2s ease;
+}
+
+/* ============================================================
+   VISUAL ANTES -> DEPOIS
+   ============================================================ */
+
+.home-workshop-visual {
+  min-height: 210px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 23px;
+
+  background: #ffffffed;
+  color: #15343b;
+
+  border-radius: 17px;
+
+  box-shadow: 8px 9px 0 #064f3c;
+}
+
+.home-workshop-before,
+.home-workshop-after {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  text-align: center;
+}
+
+.home-workshop-before > span,
+.home-workshop-after > span {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.home-workshop-before small,
+.home-workshop-after small {
+  color: #63797a;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.home-workshop-arrow {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  background: #fff0a9;
+  color: #ff7541;
+
+  border-radius: 50%;
+}
+
+.home-workshop-recycle {
+  grid-column: 1 / -1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 3px;
+  padding-top: 12px;
+
+  border-top: 1px solid #e7e5cf;
+
+  color: #087b55;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+.dark .home-workshop-feature {
+  background:
+    radial-gradient(circle at 86% 20%, #31405d 0 0, transparent 29%),
+    linear-gradient(135deg, #0d7455 0%, #075c48 55%, #06483a 100%);
+
+  box-shadow:
+    0 8px 0 #042f27,
+    0 18px 38px #00000040;
+}
+
+.dark .home-workshop-feature:hover {
+  box-shadow:
+    0 12px 0 #042f27,
+    0 24px 44px #00000055;
+}
+
+.dark .home-workshop-visual {
+  background: #1e293b;
+  color: #f8fafc;
+
+  box-shadow: 8px 9px 0 #0b1220;
+}
+
+.dark .home-workshop-before small,
+.dark .home-workshop-after small {
+  color: #b7c2cf;
+}
+
+.dark .home-workshop-arrow {
+  background: #2a3549;
+}
+
+.dark .home-workshop-recycle {
+  border-top-color: #334155;
+  color: #85dab9;
+}
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .home-workshop-feature {
+    grid-template-columns: 1fr;
+  }
+
+  .home-workshop-visual {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-workshop-feature {
+    margin-top: 22px;
+    padding: 20px;
+
+    gap: 22px;
+
+    border-radius: 18px;
+  }
+
+  .home-workshop-copy h3 {
+    font-size: 32px;
+  }
+
+  .home-workshop-copy > p {
+    font-size: 12px;
+  }
+
+  .home-workshop-tags {
+    gap: 6px;
+  }
+
+  .home-workshop-visual {
+    min-height: 170px;
+
+    padding: 18px 14px;
+
+    box-shadow: 5px 6px 0 #064f3c;
+  }
+
+  .home-workshop-before > span,
+  .home-workshop-after > span {
+    font-size: 39px;
+  }
+
+  .home-workshop-arrow {
+    width: 31px;
+    height: 31px;
+  }
+}
