@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import UserAvatar from "@/components/community/UserAvatar";
 
 import "./comunidade.css";
 
@@ -68,13 +69,17 @@ export default function ComunidadePage() {
   } = authClient.useSession();
 
   const [posts, setPosts] = useState<CommunityPost[]>([]);
-  const [content, setContent] = useState("");
+const [content, setContent] = useState("");
 
-  const [loadingPosts, setLoadingPosts] = useState(true);
-  const [publishing, setPublishing] = useState(false);
+// IMAGEM DA PUBLICAÇÃO
+const [selectedImage, setSelectedImage] = useState<File | null>(null);
+const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+const [loadingPosts, setLoadingPosts] = useState(true);
+const [publishing, setPublishing] = useState(false);
+
+const [error, setError] = useState("");
+const [message, setMessage] = useState("");
 
   /* ==========================================================
      COMENTÁRIOS
@@ -145,7 +150,69 @@ export default function ComunidadePage() {
   /* ==========================================================
      CRIAR POST
      ========================================================== */
+function handleImageChange(
+  event: React.ChangeEvent<HTMLInputElement>
+) {
+  const file = event.target.files?.[0];
 
+  if (!file) return;
+
+  setError("");
+  setMessage("");
+
+  // Formatos permitidos
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    setError(
+      "Formato inválido. Escolha uma imagem JPG, PNG ou WebP."
+    );
+
+    event.target.value = "";
+    return;
+  }
+
+  // Limite de 5 MB
+  const maxSize = 5 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+    setError("A imagem deve ter no máximo 5 MB.");
+
+    event.target.value = "";
+    return;
+  }
+
+  // Remove a prévia anterior da memória
+  if (imagePreview) {
+    URL.revokeObjectURL(imagePreview);
+  }
+
+  const preview = URL.createObjectURL(file);
+
+  setSelectedImage(file);
+  setImagePreview(preview);
+}
+
+function removeSelectedImage() {
+  if (imagePreview) {
+    URL.revokeObjectURL(imagePreview);
+  }
+
+  setSelectedImage(null);
+  setImagePreview(null);
+
+  const input = document.getElementById(
+    "community-image-input"
+  ) as HTMLInputElement | null;
+
+  if (input) {
+    input.value = "";
+  }
+}
   async function handlePublish(
     event: FormEvent<HTMLFormElement>
   ) {
@@ -553,7 +620,43 @@ export default function ComunidadePage() {
                 rows={5}
               />
 
-              <div className="create-post-footer">
+              {imagePreview && (
+  <div className="community-image-preview">
+    <img
+      src={imagePreview}
+      alt="Pré-visualização da imagem"
+    />
+
+    <button
+      type="button"
+      className="remove-image-button"
+      onClick={removeSelectedImage}
+      aria-label="Remover imagem"
+    >
+      ×
+    </button>
+  </div>
+)}
+
+<div className="create-post-footer">
+  <div className="create-post-tools">
+    <label
+      htmlFor="community-image-input"
+      className="add-image-button"
+    >
+      Adicionar imagem
+    </label>
+
+    <input
+      id="community-image-input"
+      className="community-image-input"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      onChange={handleImageChange}
+      disabled={publishing}
+    />
+  </div>
+
                 <span className="character-limit">
                   {content.length}/2000
                 </span>
@@ -683,21 +786,11 @@ export default function ComunidadePage() {
                 {/* AUTOR */}
 
                 <header className="community-post-header">
-                  {post.author.image ? (
-                    <img
-                      src={post.author.image}
-                      alt={
-                        post.author.name
-                      }
-                      className="community-avatar"
-                    />
-                  ) : (
-                    <div className="community-avatar-fallback">
-                      {post.author.name
-                        .charAt(0)
-                        .toUpperCase()}
-                    </div>
-                  )}
+                  <UserAvatar
+              name={post.author.name}
+              image={post.author.image}
+              size={40}
+            />
 
                   <div className="community-post-author">
                     <strong>

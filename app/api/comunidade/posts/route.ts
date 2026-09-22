@@ -121,14 +121,20 @@ export async function POST(request: Request) {
         ? body.content.trim()
         : "";
 
+    const imageUrl =
+      typeof body.imageUrl === "string" &&
+      body.imageUrl.trim()
+        ? body.imageUrl.trim()
+        : null;
+
     /**
      * Conteúdo vazio
      */
-    if (!content) {
+    if (!content && !imageUrl) {
       return NextResponse.json(
         {
           error:
-            "Escreva alguma coisa antes de publicar.",
+            "Escreva alguma coisa ou adicione uma imagem antes de publicar.",
         },
         {
           status: 400,
@@ -157,6 +163,7 @@ export async function POST(request: Request) {
     const post = await prisma.post.create({
       data: {
         content,
+        imageUrl,
         authorId: session.user.id,
       },
 
