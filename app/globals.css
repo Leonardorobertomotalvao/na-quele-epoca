@@ -3800,3 +3800,562 @@ footer {
     height: 31px;
   }
 }
+
+/* ============================================================
+   CORREÇÃO FINAL — CADASTRO / MOBILE
+   NA MINHA ÉPOCA
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. CORRIGE O CONTORNO AMARELO DOS INPUTS
+   ------------------------------------------------------------ */
+
+/*
+  O .auth-input já possui seu próprio efeito de foco.
+  Isso impede que o input interno receba outro contorno amarelo.
+*/
+.auth-input input:focus,
+.auth-input input:focus-visible,
+.dark .auth-input input:focus,
+.dark .auth-input input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   2. TABLET / TELAS MENORES
+   ------------------------------------------------------------ */
+
+@media (max-width: 850px) {
+
+  .auth-page {
+    min-height: 100dvh;
+
+    padding:
+      max(20px, env(safe-area-inset-top))
+      16px
+      max(30px, env(safe-area-inset-bottom));
+
+    overflow-x: hidden;
+  }
+
+  .auth-container {
+    width: 100%;
+    max-width: 620px;
+
+    margin: 0 auto;
+  }
+
+  .auth-card {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    overflow: hidden;
+  }
+
+  /* Parte verde */
+  .auth-info {
+    width: 100%;
+
+    padding: 36px 32px;
+
+    overflow: hidden;
+  }
+
+  /* Centraliza melhor o mascote */
+  .auth-mascot {
+    width: 100%;
+    height: 180px;
+
+    margin: 20px auto 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-mascot img {
+    display: block;
+
+    width: 175px;
+    height: 175px;
+
+    max-width: 100%;
+
+    margin: 0 auto;
+
+    object-fit: contain;
+  }
+
+  /* Formulário */
+  .auth-form-area {
+    width: 100%;
+    min-width: 0;
+
+    padding: 38px 32px;
+  }
+
+  .auth-form,
+  .auth-field,
+  .auth-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .auth-input input {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   3. CELULAR
+   ------------------------------------------------------------ */
+
+@media (max-width: 520px) {
+
+  /* Página inteira */
+  .auth-page {
+    display: block;
+
+    width: 100%;
+    min-height: 100dvh;
+
+    padding:
+      max(14px, env(safe-area-inset-top))
+      12px
+      max(24px, env(safe-area-inset-bottom));
+
+    overflow-x: hidden;
+  }
+
+
+  /* Container principal */
+  .auth-container {
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0 auto;
+  }
+
+
+  /* Botão voltar */
+  .auth-back {
+    margin: 0 4px 18px;
+
+    font-size: 13px;
+  }
+
+
+  /* Card principal */
+  .auth-card {
+    width: 100%;
+    max-width: 100%;
+
+    grid-template-columns: minmax(0, 1fr);
+
+    overflow: hidden;
+
+    border-radius: 20px;
+  }
+
+
+  /* ==========================================================
+     PARTE VERDE
+     ========================================================== */
+
+  .auth-info {
+    width: 100%;
+    min-width: 0;
+
+    padding: 28px 22px 30px;
+
+    overflow: hidden;
+  }
+
+
+  /* Logo */
+  .auth-brand {
+    font-size: 14px;
+  }
+
+  .auth-brand b {
+    font-size: 21px;
+  }
+
+
+  /* ==========================================================
+     MASCOTE / PIPA
+     ========================================================== */
+
+  .auth-mascot {
+    position: relative;
+
+    width: 100%;
+    height: 155px;
+
+    margin: 18px auto 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  /* Círculo atrás do mascote */
+  .auth-mascot::before {
+    width: 150px;
+    height: 150px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+  }
+
+
+  /* Imagem da pipa */
+  .auth-mascot img {
+    position: relative;
+
+    display: block;
+
+    width: 150px;
+    height: 150px;
+
+    max-width: 100%;
+
+    margin: 0 auto;
+
+    object-fit: contain;
+
+    transform: none;
+  }
+
+
+  /* ==========================================================
+     TEXTO DA PARTE VERDE
+     ========================================================== */
+
+  .auth-info h2 {
+    margin-top: 14px;
+    margin-bottom: 14px;
+
+    font-size: 29px;
+    line-height: 1.08;
+  }
+
+
+  .auth-info > p {
+    width: 100%;
+    max-width: 100%;
+
+    margin-bottom: 22px;
+
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+
+  /* Benefícios */
+  .auth-benefits {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+
+  .auth-benefits > div {
+    min-width: 0;
+  }
+
+
+  /* ==========================================================
+     ÁREA DO FORMULÁRIO
+     ========================================================== */
+
+  .auth-form-area {
+    width: 100%;
+    min-width: 0;
+
+    padding: 30px 20px 32px;
+  }
+
+
+  /* Cabeçalho */
+  .auth-heading {
+    margin-bottom: 22px;
+  }
+
+
+  .auth-heading h1 {
+    margin-bottom: 10px;
+
+    font-size: 32px;
+    line-height: 1.1;
+  }
+
+
+  .auth-heading > p:last-child {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+
+  /* ==========================================================
+     GOOGLE
+     ========================================================== */
+
+  .google-button {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0 14px;
+
+    font-size: 14px;
+  }
+
+
+  /* ==========================================================
+     DIVISOR
+     ========================================================== */
+
+  .auth-divider {
+    width: 100%;
+
+    gap: 10px;
+
+    margin: 22px 0;
+
+    white-space: normal;
+
+    text-align: center;
+  }
+
+
+  .auth-divider span {
+    flex: none;
+
+    max-width: 70%;
+
+    font-size: 11px;
+  }
+
+
+  /* ==========================================================
+     FORMULÁRIO
+     ========================================================== */
+
+  .auth-form {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .auth-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .auth-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+  }
+
+
+  /* Caixa externa do input */
+  .auth-input {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0 13px;
+
+    overflow: hidden;
+  }
+
+
+  /* Input */
+  .auth-input input {
+    width: 100%;
+    min-width: 0;
+
+    /*
+      16px também evita zoom automático
+      em alguns navegadores de celular.
+    */
+    font-size: 16px;
+
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+
+  /* Remove especificamente qualquer foco amarelo */
+  .auth-input input:focus,
+  .auth-input input:focus-visible,
+  .dark .auth-input input:focus,
+  .dark .auth-input input:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+
+    box-shadow: none !important;
+  }
+
+
+  /* Mantém apenas o foco verde no container */
+  .auth-input:focus-within {
+    border-color: #16c978;
+
+    box-shadow:
+      0 0 0 4px rgba(22, 201, 120, 0.12);
+  }
+
+
+  /* ==========================================================
+     BOTÃO CRIAR CONTA
+     ========================================================== */
+
+  .auth-submit {
+    width: 100%;
+    min-width: 0;
+
+    font-size: 14px;
+  }
+
+
+  /* ==========================================================
+     TEXTO INFERIOR
+     ========================================================== */
+
+  .auth-footer-text {
+    width: 100%;
+
+    margin-top: 18px;
+
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+
+  /* ==========================================================
+     DECORAÇÕES
+     Evita que elementos decorativos estourem a tela.
+     ========================================================== */
+
+  .auth-decoration {
+    pointer-events: none;
+  }
+
+  .auth-decoration-one,
+  .auth-decoration-two,
+  .auth-decoration-three {
+    max-width: 100vw;
+  }
+}
+
+
+/* =========================================================
+   ETAPA 2 — AUTORAÇÃO DA BRINCADEIRA NO MODAL
+   Linha discreta abaixo do título, no idioma visual do modal.
+   ========================================================= */
+
+.modal-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 10px 0 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dark .modal-author {
+  color: #aebccc;
+}
+
+.modal-author svg {
+  flex: none;
+}
+
+
+/* =========================================================
+   ETAPA 3 — ABAS DE ENTRAR / CRIAR CONTA (CADASTRO)
+   ========================================================= */
+
+.auth-mode-tabs {
+  display: flex;
+
+  gap: 6px;
+
+  margin-top: 14px;
+
+  padding: 4px;
+
+  background: rgba(21, 52, 59, 0.05);
+
+  border: 1px solid rgba(21, 52, 59, 0.12);
+  border-radius: 11px;
+}
+
+.auth-mode-tabs button {
+  flex: 1;
+
+  padding: 9px 12px;
+
+  background: transparent;
+  color: var(--muted);
+
+  border: none;
+  border-radius: 8px;
+
+  font: inherit;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.auth-mode-tabs button:hover {
+  color: var(--ink);
+}
+
+.auth-mode-tabs button.active {
+  background: var(--dark-green);
+  color: #ffffff;
+}
+
+.dark .auth-mode-tabs {
+  background: rgba(255, 255, 255, 0.05);
+
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .auth-mode-tabs button {
+  color: #aebccc;
+}
+
+.dark .auth-mode-tabs button:hover {
+  color: #ffffff;
+}
+
+.dark .auth-mode-tabs button.active {
+  background: #16c978;
+  color: #04290f;
+}

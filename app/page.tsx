@@ -44,6 +44,8 @@ import {
 
   Sparkles,
 
+  Target,
+
   Users,
 
   UserRound,
@@ -53,6 +55,10 @@ import {
 } from 'lucide-react'
 
 import { games } from './games'
+
+import { nomesRelacionados, normalizarTexto } from '@/lib/search'
+
+import { useModalA11y } from '@/lib/use-modal-a11y'
 
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
@@ -91,6 +97,22 @@ export type Game = {
   age: string
 
   benefits: string[]
+
+  /**
+
+   * Campos extras preenchidos nas brincadeiras da comunidade.
+
+   */
+
+  location?: string
+
+  safety?: string
+
+  supervision?: boolean
+
+  authorName?: string
+
+  source?: 'comunidade'
 
 }
 
@@ -165,15 +187,25 @@ const categories = [
   },
 
   {
-
+ 
     name: 'Em Grupo',
-
+ 
     icon: Users,
-
+ 
     detail: 'Juntos é mais divertido',
-
+ 
   },
-
+ 
+  {
+ 
+    name: 'Habilidade',
+ 
+    icon: Target,
+ 
+    detail: 'Pontaria e precisão',
+ 
+  },
+ 
 ]
 
 /**
@@ -203,8 +235,20 @@ export default function Page() {
   // ==========================================================
 
   const { data: session, isPending } = authClient.useSession()
-
+ 
   const [accountOpen, setAccountOpen] = useState(false)
+
+  /**
+
+   * Acessibilidade do modal: fecha com ESC e cuida do foco.
+
+   */
+
+  const modalRef = useModalA11y<HTMLElement>(selected !== null, () =>
+
+    setSelected(null),
+
+  )
 
   // ==========================================================
 
@@ -213,32 +257,72 @@ export default function Page() {
   // ==========================================================
 
   const [communityPosts, setCommunityPosts] =
-
+ 
     useState<HomeCommunityPost[]>([])
-
+ 
   const [communityLoading, setCommunityLoading] = useState(true)
+
+  // ==========================================================
+
+  // CATÁLOGO — BRINCADEIRAS APROVADAS DA COMUNIDADE
+
+  // ==========================================================
+
+  const [communityGames, setCommunityGames] = useState<Game[]>([])
+
+  /**
+
+   * Junta as brincadeiras fixas com as aprovadas pela
+
+   * comunidade em um único catálogo.
+
+   */
+
+  const allGames = useMemo(() => {
+
+    return [...games, ...communityGames]
+
+  }, [communityGames])
 
   /**
 
    * Filtra as brincadeiras pela categoria e pela pesquisa.
 
+   * A pesquisa normaliza acentos, maiúsculas e reconhece
+
+   * apelidos (ex.: "corre corre" encontra "Pega-pega").
+
    */
 
   const filtered = useMemo(() => {
 
-    const search = query.toLowerCase().trim()
+    const search = normalizarTexto(query)
 
-    return games.filter((game) => {
+    return allGames.filter((game) => {
 
       const matchesCategory =
 
         category === 'Todas' || game.category.includes(category)
 
-      const searchableText = [game.name, game.desc, ...game.category]
+      const nomeNormalizado = normalizarTexto(game.name)
 
-        .join(' ')
+      const relacionados = nomesRelacionados(nomeNormalizado)
 
-        .toLowerCase()
+      const searchableText = normalizarTexto(
+
+        [
+
+          game.name,
+
+          game.desc,
+
+          ...game.category,
+
+          ...relacionados,
+
+        ].join(' '),
+
+      )
 
       const matchesSearch =
 
@@ -248,7 +332,7 @@ export default function Page() {
 
     })
 
-  }, [category, query])
+  }, [allGames, category, query])
 
   useEffect(() => {
 
@@ -300,6 +384,56 @@ export default function Page() {
 
     loadCommunityPosts()
 
+  }, [])
+
+  // ==========================================================
+
+  // CARREGA AS BRINCADEIRAS APROVADAS PELA COMUNIDADE
+
+  // ==========================================================
+
+  useEffect(() => {
+
+    async function loadCommunityCatalog() {
+ 
+      try {
+ 
+        const response = await fetch('/api/brincadeiras', {
+
+          cache: 'no-store',
+
+        })
+ 
+        if (!response.ok) {
+ 
+          throw new Error('Catálogo indisponível.')
+ 
+        }
+ 
+        const data = await response.json()
+ 
+        if (Array.isArray(data)) {
+ 
+          setCommunityGames(data)
+ 
+        }
+ 
+      } catch (error) {
+ 
+        console.error(
+ 
+          'Erro ao carregar brincadeiras da comunidade:',
+ 
+          error,
+ 
+        )
+ 
+      }
+ 
+    }
+ 
+    loadCommunityCatalog()
+ 
   }, [])
 
   return (
@@ -1440,11 +1574,11 @@ export default function Page() {
           </span>
 
           <span>
-
-            © Na Minha Época — Feito em colaboraçao
-
+ 
+            © Na Minha Época — Feito em colaboração
+ 
             com a comunidade
-
+ 
           </span>
 
         </div>
@@ -1486,6 +1620,10 @@ export default function Page() {
             aria-modal="true"
 
             aria-labelledby="modal-title"
+
+            ref={modalRef}
+
+            tabIndex={-1}
 
           >
 
@@ -1560,11 +1698,23 @@ export default function Page() {
               </p>
 
               <h2 id="modal-title">
-
+ 
                 {selected.name}
-
+ 
               </h2>
-
+ 
+              {selected.authorName && (
+ 
+                <p className="modal-author">
+ 
+                  <UserRound size={14} />
+ 
+                  Compartilhada por {selected.authorName}
+ 
+                </p>
+ 
+              )}
+ 
               <p className="modal-desc">
 
                 {selected.desc}
@@ -1598,13 +1748,47 @@ export default function Page() {
                 </div>
 
                 <div>
-
+ 
                   <small>FAIXA ETÁRIA</small>
-
+ 
                   <p>{selected.age}</p>
-
+ 
                 </div>
-
+ 
+                {selected.location && (
+ 
+                  <div>
+ 
+                    <small>LOCAL INDICADO</small>
+ 
+                    <p>{selected.location}</p>
+ 
+                  </div>
+ 
+                )}
+ 
+                {selected.safety && (
+ 
+                  <div>
+ 
+                    <small>SEGURANÇA</small>
+ 
+                    <p>
+ 
+                      {selected.safety}
+ 
+                      {selected.supervision
+ 
+                        ? ' Recomendamos a supervisão de um adulto.'
+ 
+                        : ''}
+ 
+                    </p>
+ 
+                  </div>
+ 
+                )}
+ 
               </div>
 
               <div className="benefits">

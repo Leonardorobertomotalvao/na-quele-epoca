@@ -163,7 +163,9 @@ export const metadata: Metadata = {
  * Define configurações visuais da página.
  *
  * colorScheme:
- * Indica que o site utiliza o esquema de cores claro.
+ * Indica que o site utiliza os esquemas de cores claro
+ * e escuro — o navegador adapta formulários e a barra
+ * de ferramentas ao modo escolhido pela pessoa.
  *
  * themeColor:
  * Define a cor principal utilizada pelo navegador
@@ -171,9 +173,9 @@ export const metadata: Metadata = {
  */
 export const viewport: Viewport = {
   /*
-   * Mantém o esquema de cores claro.
+   * Suporta os dois modos do site (claro e escuro).
    */
-  colorScheme: 'light',
+  colorScheme: 'light dark',
 
   /*
    * Cor principal do projeto "Na Minha Época".

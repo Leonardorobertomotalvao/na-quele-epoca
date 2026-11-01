@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
@@ -9,14 +10,17 @@ import {
 
 import {
   ArrowLeft,
+  ArrowRight,
   Heart,
   LoaderCircle,
   MessageCircle,
   Send,
+  Sparkles,
   Users,
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { useModalA11y } from "@/lib/use-modal-a11y";
 import UserAvatar from "@/components/community/UserAvatar";
 
 import "./comunidade.css";
@@ -57,6 +61,31 @@ type CommunityPost = {
 
   likedByMe: boolean;
 };
+
+type MinhaBrincadeira = {
+  id: string;
+  name: string;
+  status: string;
+  categories: string[];
+  rejectionReason: string | null;
+  createdAt: string;
+};
+
+const CATEGORIAS_BRINCADEIRA = [
+  "Coordenação",
+  "Criatividade",
+  "Em Grupo",
+  "Habilidade",
+];
+
+const LOCAIS_BRINCADEIRA = [
+  "Casa ou sala",
+  "Quintal",
+  "Parque ou praça",
+  "Rua ou calçada",
+  "Escola",
+  "Qualquer lugar",
+];
 
 /* ============================================================
    PÁGINA
@@ -108,6 +137,49 @@ const [message, setMessage] = useState("");
     useState<string | null>(null);
 
   /* ==========================================================
+     COMPARTILHAR UMA BRINCADEIRA (CATÁLOGO COLABORATIVO)
+     ========================================================== */
+
+  const [gameFormOpen, setGameFormOpen] = useState(false);
+
+  const [minhasBrincadeiras, setMinhasBrincadeiras] = useState<
+    MinhaBrincadeira[]
+  >([]);
+
+  const [shareForm, setShareForm] = useState({
+    name: "",
+    desc: "",
+    how: "",
+    materials: "",
+    location: "Casa ou sala",
+    benefits: "",
+    minPlayers: "2",
+    minAge: "5",
+    safety: "",
+    supervision: false,
+  });
+
+  const [shareCategorias, setShareCategorias] = useState<string[]>([]);
+
+  const [shareImage, setShareImage] = useState<File | null>(null);
+  const [shareImagePreview, setShareImagePreview] = useState<string | null>(
+    null
+  );
+
+  const [shareEnviando, setShareEnviando] = useState(false);
+  const [shareErro, setShareErro] = useState("");
+  const [shareAviso, setShareAviso] = useState("");
+
+  /**
+   * Acessibilidade do formulário: fecha com ESC,
+   * cuida do foco e devolve o foco ao fechar.
+   */
+  const gameFormRef = useModalA11y<HTMLElement>(
+    gameFormOpen,
+    () => setGameFormOpen(false)
+  );
+
+  /* ==========================================================
      CARREGAR POSTS
      ========================================================== */
 
@@ -146,6 +218,42 @@ const [message, setMessage] = useState("");
   useEffect(() => {
     loadPosts();
   }, [loadPosts]);
+
+  /* ==========================================================
+     MEUS ENVIOS DE BRINCADEIRA (status de cada contribuição)
+     ========================================================== */
+
+  const carregarMinhasBrincadeiras = useCallback(async () => {
+    try {
+      const resposta = await fetch(
+        "/api/comunidade/brincadeiras",
+        {
+          cache: "no-store",
+        }
+      );
+
+      if (!resposta.ok) {
+        return;
+      }
+
+      const dados = await resposta.json();
+
+      if (Array.isArray(dados)) {
+        setMinhasBrincadeiras(dados);
+      }
+    } catch {
+      /**
+       * Este painel é apenas informativo; sem interromper
+       * a navegação quando a lista não carrega.
+       */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (session?.user) {
+      carregarMinhasBrincadeiras();
+    }
+  }, [session?.user, carregarMinhasBrincadeiras]);
 
   /* ==========================================================
      CRIAR POST
@@ -242,6 +350,39 @@ function removeSelectedImage() {
     try {
       setPublishing(true);
 
+      /**
+       * Se houver imagem selecionada, o envio para o endpoint
+       * de upload acontece primeiro. A publicação só é criada
+       * com a URL devolvida pela rota autorizada do projeto.
+       */
+      let imageUrl: string | null = null;
+
+      if (selectedImage) {
+        const formData = new FormData();
+        formData.append("file", selectedImage);
+
+        const uploadResponse = await fetch(
+          "/api/comunidade/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          const uploadData = await uploadResponse.json().catch(() => null);
+
+          throw new Error(
+            uploadData?.error ||
+              "Não foi possível enviar a imagem. A publicação não foi criada."
+          );
+        }
+
+        const uploadData = await uploadResponse.json();
+
+        imageUrl = uploadData.url;
+      }
+
       const response = await fetch(
         "/api/comunidade/posts",
         {
@@ -253,6 +394,7 @@ function removeSelectedImage() {
 
           body: JSON.stringify({
             content: text,
+            imageUrl: imageUrl ?? undefined,
           }),
         }
       );
@@ -273,6 +415,24 @@ function removeSelectedImage() {
 
       setContent("");
 
+      /**
+       * Limpa a pré-visualização da imagem usada.
+       */
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+
+      setSelectedImage(null);
+      setImagePreview(null);
+
+      const imageInput = document.getElementById(
+        "community-image-input"
+      ) as HTMLInputElement | null;
+
+      if (imageInput) {
+        imageInput.value = "";
+      }
+
       setMessage(
         "Publicação criada com sucesso!"
       );
@@ -284,6 +444,257 @@ function removeSelectedImage() {
       );
     } finally {
       setPublishing(false);
+    }
+  }
+
+  /* ==========================================================
+     BRINCADEIRA — IMAGEM E ENVIO DO FORMULÁRIO
+     ========================================================== */
+
+  function handleShareImageChange(
+    event: ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setShareErro("");
+    setShareAviso("");
+
+    const formatosPermitidos = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!formatosPermitidos.includes(file.type)) {
+      setShareErro(
+        "Formato inválido. Escolha uma imagem JPG, PNG ou WebP."
+      );
+
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setShareErro("A imagem deve ter no máximo 5 MB.");
+
+      event.target.value = "";
+      return;
+    }
+
+    if (shareImagePreview) {
+      URL.revokeObjectURL(shareImagePreview);
+    }
+
+    setShareImage(file);
+    setShareImagePreview(URL.createObjectURL(file));
+  }
+
+  function removeShareImage() {
+    if (shareImagePreview) {
+      URL.revokeObjectURL(shareImagePreview);
+    }
+
+    setShareImage(null);
+    setShareImagePreview(null);
+
+    const input = document.getElementById(
+      "share-game-image-input"
+    ) as HTMLInputElement | null;
+
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  function alternarCategoriaShare(categoria: string) {
+    setShareErro("");
+
+    setShareCategorias((current) =>
+      current.includes(categoria)
+        ? current.filter((item) => item !== categoria)
+        : [...current, categoria]
+    );
+  }
+
+  function limparFormularioShare() {
+    setShareForm({
+      name: "",
+      desc: "",
+      how: "",
+      materials: "",
+      location: "Casa ou sala",
+      benefits: "",
+      minPlayers: "2",
+      minAge: "5",
+      safety: "",
+      supervision: false,
+    });
+    setShareCategorias([]);
+    removeShareImage();
+  }
+
+  async function handleShareGame(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    setShareErro("");
+    setShareAviso("");
+
+    if (!session?.user) {
+      setShareErro(
+        "Você precisa estar logado para compartilhar uma brincadeira."
+      );
+
+      return;
+    }
+
+    const name = shareForm.name.trim();
+    const desc = shareForm.desc.trim();
+    const how = shareForm.how.trim();
+    const safety = shareForm.safety.trim();
+    const benefits = shareForm.benefits
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const minPlayers = Number(shareForm.minPlayers);
+    const minAge = Number(shareForm.minAge);
+
+    if (name.length < 3) {
+      setShareErro("O nome da brincadeira precisa ter pelo menos 3 letras.");
+      return;
+    }
+
+    if (desc.length < 10) {
+      setShareErro("Escreva uma descrição com pelo menos 10 letras.");
+      return;
+    }
+
+    if (how.length < 10) {
+      setShareErro("Explique como brincar com pelo menos 10 letras.");
+      return;
+    }
+
+    if (shareCategorias.length < 1) {
+      setShareErro("Escolha pelo menos uma categoria.");
+      return;
+    }
+
+    if (
+      !Number.isInteger(minPlayers) ||
+      minPlayers < 1 ||
+      minPlayers > 50
+    ) {
+      setShareErro(
+        "Informe uma quantidade mínima de participantes entre 1 e 50."
+      );
+
+      return;
+    }
+
+    if (
+      !Number.isInteger(minAge) ||
+      minAge < 3 ||
+      minAge > 99
+    ) {
+      setShareErro(
+        "Informe uma idade mínima recomendada entre 3 e 99."
+      );
+
+      return;
+    }
+
+    try {
+      setShareEnviando(true);
+
+      /**
+       * Imagem opcional: enviada ao mesmo endpoint de upload
+       * autorizado usado nas publicações.
+       */
+      let image: string | null = null;
+
+      if (shareImage) {
+        const formData = new FormData();
+        formData.append("file", shareImage);
+
+        const uploadResposta = await fetch(
+          "/api/comunidade/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!uploadResposta.ok) {
+          const uploadDados = await uploadResposta.json().catch(() => null);
+
+          throw new Error(
+            uploadDados?.error ||
+              "Não foi possível enviar a imagem da brincadeira."
+          );
+        }
+
+        const uploadDados = await uploadResposta.json();
+
+        image = uploadDados.url;
+      }
+
+      const resposta = await fetch(
+        "/api/comunidade/brincadeiras",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            name,
+            desc,
+            how,
+            materials: shareForm.materials.trim(),
+            location: shareForm.location,
+            benefits,
+            minPlayers,
+            minAge,
+            categories: shareCategorias,
+            safety,
+            supervision: shareForm.supervision,
+            image: image ?? undefined,
+          }),
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(
+          dados?.error || "Não foi possível enviar a brincadeira agora."
+        );
+      }
+
+      setGameFormOpen(false);
+      limparFormularioShare();
+
+      setMessage(
+        dados.possibleDuplicate
+          ? `Envio recebido! Notamos que já existe \"${dados.possibleDuplicate}\" — a moderação vai conferir antes de aprovar.`
+          : "Envio recebido! A brincadeira está aguardando a revisão da moderação."
+      );
+
+      carregarMinhasBrincadeiras();
+    } catch (err) {
+      setShareErro(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível enviar a brincadeira agora."
+      );
+    } finally {
+      setShareEnviando(false);
     }
   }
 
@@ -707,6 +1118,75 @@ function removeSelectedImage() {
           )}
         </section>
 
+        {/* ============================================================
+            COMPARTILHAR UMA BRINCADEIRA (CATÁLOGO COLABORATIVO)
+            ============================================================ */}
+
+        <section className="share-game-card">
+          <div className="share-game-copy">
+            <span className="share-game-badge">
+              <Sparkles size={15} />
+
+              CATÁLOGO DA COMUNIDADE
+            </span>
+
+            <h2>
+              Você conhece uma brincadeira de
+              antigamente?
+            </h2>
+
+            <p>
+              Conte para a comunidade como era (ou
+              como é) a brincadeira. Depois da revisão
+              da moderação, ela entra no catálogo oficial
+              do site — com o seu nome na autoria.
+            </p>
+
+            {session?.user &&
+              minhasBrincadeiras.length > 0 && (
+                <span className="share-game-status">
+                  {minhasBrincadeiras.filter((item) =>
+                    item.status === "PENDENTE"
+                  ).length}{" "}
+                  aguardando revisão •{" "}
+                  {minhasBrincadeiras.filter((item) =>
+                    item.status === "APROVADO"
+                  ).length}{" "}
+                  aprovadas •{" "}
+                  {minhasBrincadeiras.filter((item) =>
+                    item.status === "REJEITADO"
+                  ).length}{" "}
+                  rejeitadas
+                </span>
+              )}
+          </div>
+
+          {session?.user ? (
+            <button
+              type="button"
+              className="share-game-button"
+              onClick={() => {
+                setShareErro("");
+                setShareAviso("");
+                setGameFormOpen(true);
+              }}
+            >
+              Compartilhar uma brincadeira
+
+              <ArrowRight size={17} />
+            </button>
+          ) : (
+            <a
+              href="/cadastro"
+              className="share-game-button"
+            >
+              Entrar para compartilhar
+
+              <ArrowRight size={17} />
+            </a>
+          )}
+        </section>
+
         {/* MENSAGENS */}
 
         {error && (
@@ -810,6 +1290,18 @@ function removeSelectedImage() {
                 <div className="community-post-content">
                   <p>{post.content}</p>
                 </div>
+
+                {/* FOTO DA PUBLICAÇÃO */}
+
+                {post.imageUrl && (
+                  <div className="community-post-image">
+                    <img
+                      src={post.imageUrl}
+                      alt={`Imagem da publicação de ${post.author.name}`}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
 
                 {/* AÇÕES */}
 
@@ -1080,6 +1572,382 @@ function removeSelectedImage() {
           </div>
         )}
       </section>
+
+      {/* ============================================================
+          MODAL — FORMULÁRIO DE BRINCADEIRA
+          ============================================================ */}
+
+      {gameFormOpen && (
+        <div
+          className="community-modal-backdrop"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setGameFormOpen(false);
+            }
+          }}
+        >
+          <article
+            ref={gameFormRef}
+            className="community-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="share-game-title"
+            tabIndex={-1}
+          >
+            <header className="community-modal-header">
+              <div>
+                <small>ENVIAR BRINCADEIRA</small>
+
+                <h2 id="share-game-title">
+                  Conte como se brinca
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                className="community-modal-close"
+                aria-label="Fechar formulário"
+                onClick={() => setGameFormOpen(false)}
+              >
+                ×
+              </button>
+            </header>
+
+            <form
+              className="community-modal-content"
+              onSubmit={handleShareGame}
+            >
+              {shareErro && (
+                <div
+                  className="community-alert error"
+                  role="alert"
+                >
+                  {shareErro}
+                </div>
+              )}
+
+              <div className="share-field">
+                <label htmlFor="share-game-name">
+                  Nome
+                </label>
+
+                <input
+                  id="share-game-name"
+                  type="text"
+                  value={shareForm.name}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      name: event.target.value,
+                    })
+                  }
+                  maxLength={60}
+                  placeholder="Amarelinha, Pega-pega…"
+                  required
+                />
+              </div>
+
+              <div className="share-field">
+                <label htmlFor="share-game-image-input">
+                  Foto ou imagem (opcional)
+                </label>
+
+                <input
+                  id="share-game-image-input"
+                  className="share-game-image-input"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleShareImageChange}
+                />
+
+                {!shareImagePreview && (
+                  <small className="share-field-hint">
+                    JPG, PNG ou WebP com até 5 MB.
+                  </small>
+                )}
+
+                {shareImagePreview && (
+                  <div className="community-image-preview">
+                    <img
+                      src={shareImagePreview}
+                      alt="Pré-visualização da imagem escolhida"
+                    />
+
+                    <button
+                      type="button"
+                      className="remove-image-button"
+                      onClick={removeShareImage}
+                    >
+                      Remover
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="share-field">
+                <label htmlFor="share-game-desc">
+                  Descrição curta
+                </label>
+
+                <textarea
+                  id="share-game-desc"
+                  value={shareForm.desc}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      desc: event.target.value,
+                    })
+                  }
+                  maxLength={500}
+                  placeholder="O que é a brincadeira e por que ela é divertida."
+                  required
+                />
+
+                <small className="share-field-hint">
+                  {shareForm.desc.length}/500 letras
+                </small>
+              </div>
+
+              <div className="share-field">
+                <label htmlFor="share-game-how">
+                  Como brincar
+                </label>
+
+                <textarea
+                  id="share-game-how"
+                  value={shareForm.how}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      how: event.target.value,
+                    })
+                  }
+                  maxLength={2000}
+                  placeholder="Passo a passo, regras, dicas da sua época."
+                  required
+                />
+
+                <small className="share-field-hint">
+                  {shareForm.how.length}/2000 letras
+                </small>
+              </div>
+
+              <div className="share-field-row">
+                <div className="share-field">
+                  <label htmlFor="share-game-materials">
+                    Materiais
+                  </label>
+
+                  <input
+                    id="share-game-materials"
+                    type="text"
+                    value={shareForm.materials}
+                    onChange={(event) =>
+                      setShareForm({
+                        ...shareForm,
+                        materials:
+                          event.target.value,
+                      })
+                    }
+                    maxLength={300}
+                    placeholder="Giz, corda, tampinhas…"
+                  />
+
+                  <small className="share-field-hint">
+                    Se nada for preciso, deixe em
+                    branco.
+                  </small>
+                </div>
+
+                <div className="share-field">
+                  <label htmlFor="share-game-location">
+                    Local indicado
+                  </label>
+
+                  <select
+                    id="share-game-location"
+                    value={shareForm.location}
+                    onChange={(event) =>
+                      setShareForm({
+                        ...shareForm,
+                        location: event.target.value,
+                      })
+                    }
+                  >
+                    {LOCAIS_BRINCADEIRA.map(
+                      (local) => (
+                        <option
+                          key={local}
+                          value={local}
+                        >
+                          {local}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="share-field">
+                <label htmlFor="share-game-benefits">
+                  Habilidades desenvolvidas
+                </label>
+
+                <input
+                  id="share-game-benefits"
+                  type="text"
+                  value={shareForm.benefits}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      benefits: event.target.value,
+                    })
+                  }
+                  placeholder="Equilíbrio, Coordenação, Memória…"
+                />
+
+                <small className="share-field-hint">
+                  Separe por vírgulas (máximo 8).
+                </small>
+              </div>
+
+              <div className="share-field-row">
+                <div className="share-field">
+                  <label htmlFor="share-game-players">
+                    Mínimo de participantes
+                  </label>
+
+                  <input
+                    id="share-game-players"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={shareForm.minPlayers}
+                    onChange={(event) =>
+                      setShareForm({
+                        ...shareForm,
+                        minPlayers:
+                          event.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="share-field">
+                  <label htmlFor="share-game-age">
+                    Idade mínima
+                  </label>
+
+                  <input
+                    id="share-game-age"
+                    type="number"
+                    min={3}
+                    max={99}
+                    value={shareForm.minAge}
+                    onChange={(event) =>
+                      setShareForm({
+                        ...shareForm,
+                        minAge: event.target.value,
+                      })
+                    }
+                    required
+                  />
+
+                  <small className="share-field-hint">
+                    Recomendada para brincar com
+                    segurança.
+                  </small>
+                </div>
+              </div>
+
+              <div className="share-field">
+                <label>Categorias</label>
+
+                <div className="share-categorias">
+                  {CATEGORIAS_BRINCADEIRA.map(
+                    (categoria) => (
+                      <button
+                        key={categoria}
+                        type="button"
+                        className={
+                          shareCategorias.includes(
+                            categoria
+                          )
+                            ? "share-categoria-chip selected"
+                            : "share-categoria-chip"
+                        }
+                        aria-pressed={
+                          shareCategorias.includes(
+                            categoria
+                          )
+                        }
+                        onClick={() =>
+                          alternarCategoriaShare(
+                            categoria
+                          )
+                        }
+                      >
+                        {categoria}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="share-field">
+                <label htmlFor="share-game-safety">
+                  Dicas de segurança (opcional)
+                </label>
+
+                <textarea
+                  id="share-game-safety"
+                  value={shareForm.safety}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      safety: event.target.value,
+                    })
+                  }
+                  maxLength={600}
+                  placeholder="Os cuidados de que os responsáveis devem lembrar."
+                />
+              </div>
+
+              <label className="share-check">
+                <input
+                  type="checkbox"
+                  checked={shareForm.supervision}
+                  onChange={(event) =>
+                    setShareForm({
+                      ...shareForm,
+                      supervision: event.target.checked,
+                    })
+                  }
+                />
+
+                Recomenda supervisão de um adulto
+              </label>
+
+              <div className="share-actions">
+                <button
+                  type="button"
+                  className="share-cancel"
+                  onClick={() => setGameFormOpen(false)}
+                >
+                  Cancelar
+                </button>
+
+                <button type="submit" disabled={shareEnviando}>
+                  {shareEnviando
+                    ? "Enviando…"
+                    : "Enviar para revisão"}
+                </button>
+              </div>
+            </form>
+          </article>
+        </div>
+      )}
     </main>
   );
 }

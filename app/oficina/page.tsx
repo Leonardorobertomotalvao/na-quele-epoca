@@ -18,6 +18,8 @@ import {
 
 import './oficina.css'
 
+import { useModalA11y } from '@/lib/use-modal-a11y'
+
 type Toy = {
   id: string
   name: string
@@ -84,6 +86,28 @@ const materials = [
     emoji: '🥤',
   },
 ]
+
+/**
+ * Alternativas amigas para os materiais da oficina.
+ * Aparecem no modo oficina, no bloco
+ * "NÃO TEM? PODE TROCAR" — com sugestões que quase
+ * todo mundo tem em casa.
+ */
+const ALTERNATIVAS_MATERIAIS: Record<string, string> = {
+  papelao:
+    'caixa de sapato, caixa de biscoito ou cartolina dobrada',
+  garrafa: 'frasco de xampu vazio e bem limpo',
+  barbante: 'linha grossa, fio de lã ou cadarço limpo',
+  tampinhas:
+    'rolhas de cortiça ou círculos de papelão grosso',
+  palitos: 'palitos de picolé ou lápis curtos sem ponta',
+  papel: 'folhas de caderno ou páginas de revista',
+  fita: 'fita crepe colorida ou tiras de papel coladas',
+  tinta: 'canetinhas, lápis de cor ou giz de cera',
+  latas:
+    'latas de leite em pó bem lavadas (com ajuda de um adulto)',
+  copos: 'copos plásticos de embalagem limpos',
+}
 
 const toys: Toy[] = [
   {
@@ -241,6 +265,107 @@ const toys: Toy[] = [
       'Quando estiver seguro, tente caminhar devagar.',
     ],
   },
+
+  {
+    id: 'aviao-papel',
+    name: 'Aviãozinho de Papel',
+    emoji: '✈️',
+    description:
+      'Uma folha de papel ganha asas no aviãozinho clássico, dobrado em poucas dobras.',
+    age: '5+ anos',
+    time: '5 min',
+    difficulty: 'Muito fácil',
+    materials: ['papel'],
+    safety:
+      'Brinque em um espaço aberto e nunca aponte o aviãozinho para os olhos de ninguém.',
+    memory:
+      'A brincadeira era chamada de competição: quem lançasse o aviãozinho mais longe era o campeão da tarde.',
+    steps: [
+      'Use uma folha de papel na vertical.',
+      'Dobre a folha ao meio e abra de volta para marcar o centro.',
+      'Traga as duas pontas superiores até a marca do centro.',
+      'Dobre as bordas de novo até o centro para afinar o corpo.',
+      'Dobre tudo ao meio, na altura do nariz do aviãozinho.',
+      'Ajuste as asas para cima e faça o primeiro lançamento.',
+    ],
+  },
+
+  {
+    id: 'trompos-tampinhas',
+    name: 'Trompos de Tampinha',
+    emoji: '🌀',
+    description:
+      'Tampinhas e palitos se transformam em pequenos trompos prontos para girar no chão.',
+    age: '7+ anos',
+    time: '15 min',
+    difficulty: 'Fácil',
+    materials: [
+      'tampinhas',
+      'palitos',
+      'barbante',
+      'fita',
+    ],
+    safety:
+      'Gire o trompo longe de outras pessoas para o barbante não tocar ninguém.',
+    memory:
+      'Girar trompo era um desafio entre amigos: quem conseguisse girar mais tempo vencia a rodada.',
+    steps: [
+      'Peça para um adulto fazer um pequeno furo no centro da tampinha.',
+      'Encaixe um pedaço curto de palito nesse furo para formar o eixo.',
+      'Fixe o eixo com fita adesiva, dos dois lados da tampinha.',
+      'Enrole um barbante ao redor do eixo.',
+      'Coloque o trompo no chão e puxe o barbante com firmeza.',
+      'Veja o trompo girar e desafie um amigo para ver quem gira mais tempo.',
+    ],
+  },
+
+  {
+    id: 'domino-tampinhas',
+    name: 'Dominó de Tampinhas',
+    emoji: '🔷',
+    description:
+      'Pares de tampinhas pintadas formam um dominó artesanal para jogar em qualquer mesa.',
+    age: '6+ anos',
+    time: '25 min',
+    difficulty: 'Fácil',
+    materials: ['tampinhas', 'tinta'],
+    safety:
+      'Pinte em um local ventilado e deixe as tampinhas secarem bem antes de brincar.',
+    memory:
+      'Pintar as tampinhas era metade da diversão. Cada partida começava com um desenho diferente nos pontos.',
+    steps: [
+      'Lave e enxugue bem cerca de vinte e quatro tampinhas.',
+      'Divida as tampinhas em pares iguais para formar as peças.',
+      'Pinte os pontos de cada peça e espere secar.',
+      'Espalhe as peças na mesa com os pontos para baixo.',
+      'Cada jogador pega algumas peças sem mostrar para os outros.',
+      'Encaixe peças de pontos iguais até alguém terminar as suas.',
+    ],
+  },
+
+  {
+    id: 'boneco-papelao',
+    name: 'Boneco Articulado de Papelão',
+    emoji: '🧸',
+    description:
+      'Cabeça, corpo e membros ligados por fita formam um boneco que se mexe para teatrinhos.',
+    age: '7+ anos',
+    time: '30 min',
+    difficulty: 'Médio',
+    materials: ['papelao', 'fita'],
+    safety:
+      'Cortar papelão grosso é tarefa para um adulto; as peças ficam com as bordas bem firmes.',
+    memory:
+      'Cada boneco de papelão tinha seu papel: herói, bicho ou palhaço do teatrinho inventado em casa.',
+    steps: [
+      'Desenhe no papelão uma cabeça, um corpo, braços e pernas separados.',
+      'Peça para um adulto recortar cada peça com cuidado.',
+      'Ligue os membros ao corpo com pequenas fitas curtas.',
+      'Ajuste a fita para os membros se moverem com facilidade.',
+      'Decore o rosto e as roupas do boneco.',
+      'Coloque o boneco em pé para dançar e contar histórias.',
+    ],
+  },
 ]
 
 function materialLabel(id: string) {
@@ -259,6 +384,16 @@ export default function OficinaPage() {
 
   const [selectedToy, setSelectedToy] =
     useState<Toy | null>(null)
+
+  /**
+   * Acessibilidade do modal da oficina:
+   * fecha com ESC, cuida do foco e devolve
+   * o foco ao fechar.
+   */
+  const modalRef = useModalA11y<HTMLElement>(
+    selectedToy !== null,
+    () => setSelectedToy(null)
+  )
 
   function toggleMaterial(id: string) {
     setSelectedMaterials((current) =>
@@ -678,6 +813,8 @@ export default function OficinaPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="workshop-modal-title"
+            ref={modalRef}
+            tabIndex={-1}
           >
             <button
               type="button"
@@ -743,6 +880,48 @@ export default function OficinaPage() {
                   )}
                 </div>
               </section>
+
+              {selectedToy.materials.some(
+                (material) =>
+                  ALTERNATIVAS_MATERIAIS[
+                    material
+                  ]
+              ) && (
+                <section className="workshop-modal-block">
+                  <span className="modal-block-label">
+                    NÃO TEM? PODE TROCAR
+                  </span>
+
+                  <ul className="workshop-alternatives">
+                    {selectedToy.materials
+                      .filter(
+                        (material) =>
+                          ALTERNATIVAS_MATERIAIS[
+                            material
+                          ]
+                      )
+                      .map((material) => (
+                        <li
+                          key={material}
+                        >
+                          <strong>
+                            {materialLabel(
+                              material
+                            )}
+                          </strong>
+
+                          <span>
+                            {
+                              ALTERNATIVAS_MATERIAIS[
+                                material
+                              ]
+                            }
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                </section>
+              )}
 
               <div className="workshop-safety">
                 <ShieldCheck />

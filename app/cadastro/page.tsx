@@ -11,6 +11,13 @@ export default function CadastroPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /**
+   * A página vai de "criar conta" para "entrar" sem sair do
+   * lugar. Por padrão, mantém o fluxo de cadastro que já
+   * existia no site.
+   */
+  const [modo, setModo] = useState<"criar" | "entrar">("criar");
+
   async function handleCadastro(e: React.FormEvent) {
     e.preventDefault();
 
@@ -25,6 +32,30 @@ export default function CadastroPage() {
 
     if (error) {
       setError(error.message || "Não foi possível criar a conta.");
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = "/";
+  }
+
+  async function handleEntrar(e: React.FormEvent) {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+
+    const { error } = await authClient.signIn.email({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(
+        error.status === 401
+          ? "E-mail ou senha incorretos. Tente novamente."
+          : error.message || "Não foi possível entrar."
+      );
       setLoading(false);
       return;
     }
@@ -126,11 +157,49 @@ export default function CadastroPage() {
                 BEM-VINDO!
               </p>
 
-              <h1>Criar conta</h1>
+              <h1>
+                {modo === "criar" ? "Criar conta" : "Entrar"}
+              </h1>
 
               <p>
-                Crie sua conta para começar a participar.
+                {modo === "criar"
+                  ? "Crie sua conta para começar a participar."
+                  : "Que bom te ver de novo! Entre na sua conta."}
               </p>
+
+              {/* Abas: criar / entrar */}
+
+              <div
+                className="auth-mode-tabs"
+                role="tablist"
+                aria-label="Entrar ou criar conta"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={modo === "criar"}
+                  className={modo === "criar" ? "active" : ""}
+                  onClick={() => {
+                    setModo("criar");
+                    setError("");
+                  }}
+                >
+                  Criar conta
+                </button>
+
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={modo === "entrar"}
+                  className={modo === "entrar" ? "active" : ""}
+                  onClick={() => {
+                    setModo("entrar");
+                    setError("");
+                  }}
+                >
+                  Já tenho conta
+                </button>
+              </div>
             </div>
 
             {/* Google */}
@@ -149,32 +218,41 @@ export default function CadastroPage() {
 
             {/* Divisor */}
             <div className="auth-divider">
-              <span>ou continue com seu e-mail</span>
+              <span>
+                ou {modo === "criar"
+                  ? "continue com seu e-mail"
+                  : "entre com seu e-mail"}
+              </span>
             </div>
 
-            <form onSubmit={handleCadastro} className="auth-form">
+            <form
+              onSubmit={modo === "criar" ? handleCadastro : handleEntrar}
+              className="auth-form"
+            >
 
-              {/* Nome */}
-              <div className="auth-field">
-                <label htmlFor="name">
-                  Nome
-                </label>
+              {/* Nome (apenas ao criar conta) */}
+              {modo === "criar" && (
+                <div className="auth-field">
+                  <label htmlFor="name">
+                    Nome
+                  </label>
 
-                <div className="auth-input">
-                  <UserRound />
+                  <div className="auth-input">
+                    <UserRound />
 
-                  <input
-                    id="name"
-                    type="text"
-                    placeholder="Como podemos te chamar?"
-                    value={name}
-                    onChange={(e) =>
-                      setName(e.target.value)
-                    }
-                    required
-                  />
+                    <input
+                      id="name"
+                      type="text"
+                      placeholder="Como podemos te chamar?"
+                      value={name}
+                      onChange={(e) =>
+                        setName(e.target.value)
+                      }
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* E-mail */}
               <div className="auth-field">
@@ -228,21 +306,26 @@ export default function CadastroPage() {
                 </div>
               )}
 
-              {/* Criar conta */}
+              {/* Enviar */}
               <button
                 type="submit"
                 className="auth-submit"
                 disabled={loading}
               >
                 {loading
-                  ? "Criando sua conta..."
-                  : "Criar minha conta"}
+                  ? modo === "criar"
+                    ? "Criando sua conta..."
+                    : "Entrando..."
+                  : modo === "criar"
+                    ? "Criar minha conta"
+                    : "Entrar"}
               </button>
             </form>
 
             <p className="auth-footer-text">
-              Ao criar uma conta, você poderá participar
-              da comunidade e compartilhar suas memórias.
+              {modo === "criar"
+                ? "Ao criar uma conta, você poderá participar da comunidade e compartilhar suas memórias."
+                : "Ao entrar, você volta para a comunidade com suas memórias guardadas."}
             </p>
           </div>
         </div>

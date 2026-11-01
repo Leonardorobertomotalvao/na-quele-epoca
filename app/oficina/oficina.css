@@ -1472,3 +1472,60 @@
     color: #654b42;
   }
 }
+
+/* ============================================================
+   ALTERNATIVAS DE MATERIAIS — "NÃO TEM? PODE TROCAR"
+   ============================================================ */
+
+.workshop-alternatives {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin: 0;
+
+  padding: 0;
+
+  list-style: none;
+}
+
+.workshop-alternatives li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+
+  gap: 4px 6px;
+
+  padding: 10px 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+}
+
+.workshop-alternatives strong {
+  font-size: 12.5px;
+}
+
+.workshop-alternatives span {
+  color: #a7b3c0;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+:root:not(.dark) .workshop-alternatives li {
+  background: rgba(21, 52, 59, 0.04);
+
+  border-color: rgba(21, 52, 59, 0.15);
+}
+
+:root:not(.dark) .workshop-alternatives span {
+  color: var(--muted);
+}
+
+.dark .workshop-alternatives span {
+  color: #94a3b8;
+}

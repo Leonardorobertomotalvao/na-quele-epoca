@@ -1,0 +1,747 @@
+/* ============================================================
+   NA MINHA ÉPOCA — app/admin/admin.css
+   ============================================================
+   Painel de moderação (/admin).
+   Linguagem visual do site: creme, verde e laranja.
+   No modo escuro, segue a paleta escura do site.
+   ============================================================ */
+
+.admin-page {
+  min-height: 100vh;
+
+  padding: 28px 20px 60px;
+
+  background:
+    radial-gradient(
+      circle at 6% 4%,
+      rgba(22, 201, 120, 0.07),
+      transparent 30%
+    ),
+    var(--white);
+
+  color: var(--ink);
+}
+
+.admin-back {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.admin-back:hover {
+  color: var(--dark-green);
+}
+
+.admin-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  max-width: 980px;
+
+  margin: 18px auto 26px;
+
+  flex-wrap: wrap;
+}
+
+.admin-label {
+  color: var(--dark-green);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+}
+
+.admin-heading h1 {
+  margin: 6px 0 6px;
+
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.admin-heading p {
+  max-width: 560px;
+
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------- contadores ---------- */
+
+.admin-contadores {
+  display: flex;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+.admin-contador {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 7px 12px;
+
+  font-size: 11.5px;
+  font-weight: 800;
+
+  border-radius: 20px;
+}
+
+.admin-contador.pendente {
+  background: rgba(255, 213, 79, 0.22);
+  color: #9a6b06;
+}
+
+.admin-contador.aprovada {
+  background: rgba(22, 201, 120, 0.14);
+  color: var(--dark-green);
+}
+
+.admin-contador.rejeitada {
+  background: rgba(235, 90, 60, 0.14);
+  color: #b3371d;
+}
+
+/* ---------- seções ---------- */
+
+.admin-section {
+  max-width: 980px;
+
+  margin: 0 auto 34px;
+}
+
+.admin-section h2 {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 0 0 14px;
+
+  font-size: 18px;
+}
+
+.admin-section h2 small {
+  padding: 3px 10px;
+
+  background: rgba(21, 52, 59, 0.08);
+  color: var(--muted);
+
+  border-radius: 14px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.admin-vazio {
+  padding: 26px;
+
+  background: rgba(21, 52, 59, 0.03);
+
+  border: 1px dashed rgba(21, 52, 59, 0.2);
+  border-radius: 14px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin-lista {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+/* ---------- cartões ---------- */
+
+.admin-card {
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(21, 52, 59, 0.12);
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 22px rgba(21, 52, 59, 0.06);
+}
+
+.admin-card.compacto {
+  padding: 14px 16px;
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.admin-card-quem {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  flex: 1;
+}
+
+.admin-card-quem strong {
+  font-size: 15px;
+}
+
+.admin-card-quem span {
+  color: var(--muted);
+
+  font-size: 11.5px;
+}
+
+.admin-card-chips {
+  flex: none;
+}
+
+.admin-chip {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 5px 10px;
+
+  background: rgba(255, 213, 79, 0.25);
+  color: #9a6b06;
+
+  font-size: 10.5px;
+  font-weight: 800;
+
+  border-radius: 14px;
+}
+
+.admin-card-imagem {
+  display: block;
+
+  margin-bottom: 14px;
+
+  max-height: 320px;
+
+  object-fit: cover;
+
+  border-radius: 12px;
+}
+
+.admin-fatos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 12px 18px;
+
+  margin-bottom: 12px;
+}
+
+.admin-fatos > div {
+  min-width: 0;
+}
+
+.admin-fatos small {
+  color: var(--dark-green);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.13em;
+}
+
+.admin-fatos p {
+  margin: 4px 0 0;
+
+  color: var(--ink);
+
+  font-size: 12.5px;
+  line-height: 1.55;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-categorias {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-bottom: 12px;
+}
+
+.admin-categorias.somentes span {
+  padding: 5px 11px;
+
+  background: rgba(22, 201, 120, 0.1);
+  color: var(--dark-green);
+
+  font-size: 10.5px;
+  font-weight: 800;
+
+  border-radius: 14px;
+}
+
+.admin-categorias button {
+  padding: 7px 12px;
+
+  background: #ffffff;
+  color: var(--muted);
+
+  border: 1px solid rgba(21, 52, 59, 0.16);
+  border-radius: 18px;
+
+  font: inherit;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-categorias button.selected {
+  background: rgba(22, 201, 120, 0.14);
+  color: var(--dark-green);
+
+  border-color: #16c978;
+}
+
+.admin-motivo label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-motivo textarea {
+  padding: 10px 12px;
+
+  width: 100%;
+
+  background: #ffffff;
+  color: var(--ink);
+
+  border: 1px solid rgba(21, 52, 59, 0.16);
+  border-radius: 10px;
+
+  font: inherit;
+
+  font-size: 12.5px;
+
+  min-height: 64px;
+
+  resize: vertical;
+}
+
+/* ---------- formulário de edição ---------- */
+
+.admin-editar {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  margin-top: 4px;
+
+  padding: 16px;
+
+  background: rgba(22, 201, 120, 0.04);
+
+  border: 1px solid rgba(22, 201, 120, 0.25);
+  border-radius: 12px;
+}
+
+.admin-editar label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-editar input,
+.admin-editar select,
+.admin-editar textarea {
+  padding: 10px 12px;
+
+  width: 100%;
+
+  background: #ffffff;
+  color: var(--ink);
+
+  border: 1px solid rgba(21, 52, 59, 0.16);
+  border-radius: 10px;
+
+  font: inherit;
+
+  font-size: 12.5px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-editar textarea {
+  min-height: 74px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+}
+
+.admin-editar input:focus,
+.admin-editar select:focus,
+.admin-editar textarea:focus {
+  border-color: #16c978;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 201, 120, 0.16);
+}
+
+.admin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 12px;
+}
+
+.admin-card-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 12px;
+
+  flex-wrap: wrap;
+}
+
+.admin-motivo {
+  margin-top: 10px;
+}
+
+/* ---------- botões ---------- */
+
+.admin-botao {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 10px;
+
+  font: inherit;
+
+  font-size: 12.5px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.15s ease,
+    filter 0.2s ease,
+    background 0.2s ease;
+}
+
+.admin-botao:active {
+  transform: scale(0.98);
+}
+
+.admin-botao:disabled {
+  opacity: 0.55;
+
+  cursor: progress;
+}
+
+.admin-botao.primario {
+  background: #ff7541;
+  color: #ffffff;
+
+  box-shadow:
+    0 3px 0 #c9512d;
+}
+
+.admin-botao.primario:hover {
+  filter: brightness(1.05);
+}
+
+.admin-botao.neutro {
+  background: rgba(21, 52, 59, 0.08);
+  color: var(--ink);
+}
+
+.admin-botao.neutro:hover {
+  background: rgba(21, 52, 59, 0.14);
+}
+
+.admin-botao.secundario {
+  background: transparent;
+  color: var(--muted);
+
+  border: 1px solid rgba(21, 52, 59, 0.18);
+}
+
+.admin-botao.secundario:hover {
+  background: rgba(21, 52, 59, 0.05);
+}
+
+.admin-botao.perigo {
+  background: transparent;
+  color: #b3371d;
+
+  border: 1px solid rgba(235, 90, 60, 0.4);
+}
+
+.admin-botao.perigo:hover {
+  background: rgba(235, 90, 60, 0.1);
+}
+
+.admin-motivo-registro {
+  margin: 8px 0 0;
+
+  color: #b3371d;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ---------- estados de bloqueio ---------- */
+
+.admin-mensagem {
+  min-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  text-align: center;
+
+  color: var(--muted);
+}
+
+.admin-mensagem h1 {
+  margin: 6px 0 0;
+
+  color: var(--ink);
+
+  font-size: 24px;
+}
+
+.admin-mensagem p {
+  max-width: 420px;
+
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.spin {
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- modo escuro ---------- */
+
+.dark .admin-page {
+  background:
+    radial-gradient(
+      circle at 6% 4%,
+      rgba(22, 201, 120, 0.09),
+      transparent 30%
+    ),
+    var(--white, #1e293b);
+}
+
+.dark .admin-card {
+  background: #1e293b;
+
+  border-color: #334155;
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.25);
+}
+
+.dark .admin-editar {
+  background: rgba(22, 201, 120, 0.06);
+
+  border-color: rgba(22, 201, 120, 0.35);
+}
+
+.dark .admin-editar input,
+.dark .admin-editar select,
+.dark .admin-editar textarea,
+.dark .admin-motivo textarea {
+  background: #172033;
+  color: #f1f5f9;
+
+  border-color: #334155;
+}
+
+.dark .admin-editar input:focus,
+.dark .admin-editar select:focus,
+.dark .admin-editar textarea:focus,
+.dark .admin-motivo textarea:focus {
+  border-color: #16c978;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 201, 120, 0.2);
+}
+
+.dark .admin-categorias button {
+  background: #172033;
+  color: #cbd5e1;
+
+  border-color: #334155;
+}
+
+.dark .admin-categorias button.selected {
+  background: rgba(22, 201, 120, 0.16);
+  color: #a7f3d0;
+
+  border-color: #16c978;
+}
+
+.dark .admin-fatos p,
+.dark .admin-card-quem strong {
+  color: #cbd5e1;
+}
+
+.dark .admin-section h2 small {
+  background: rgba(255, 255, 255, 0.08);
+  color: #aebccc;
+}
+
+.dark .admin-vazio {
+  background: rgba(255, 255, 255, 0.03);
+
+  border-color: rgba(255, 255, 255, 0.16);
+
+  color: #94a3b8;
+}
+
+.dark .admin-botao.neutro {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+
+.dark .admin-botao.secundario {
+  color: #cbd5e1;
+
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark .admin-botao.neutro:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.dark .admin-contador.pendente {
+  background: rgba(255, 213, 79, 0.16);
+  color: #ffd54f;
+}
+
+.dark .admin-contador.aprovada {
+  background: rgba(22, 201, 120, 0.16);
+  color: #7bdcaf;
+}
+
+.dark .admin-contador.rejeitada {
+  background: rgba(235, 90, 60, 0.16);
+  color: #ff9f85;
+}
+
+.dark .admin-chip {
+  background: rgba(255, 213, 79, 0.16);
+  color: #ffd54f;
+}
+
+.dark .admin-categorias.somentes span {
+  background: rgba(22, 201, 120, 0.14);
+  color: #7bdcaf;
+}
+
+.dark .admin-motivo-registro {
+  color: #ff9f85;
+}
+
+.dark .admin-card-imagem {
+  border: 1px solid #334155;
+}
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 720px) {
+  .admin-heading {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .admin-fatos {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-heading h1 {
+    font-size: 24px;
+  }
+}

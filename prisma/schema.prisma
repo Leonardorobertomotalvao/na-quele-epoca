@@ -7,12 +7,37 @@ datasource db {
   provider = "postgresql"
 }
 
+/**
+ * Papel do usuário dentro do projeto.
+ *
+ * USER  — perfil comum: publica na comunidade e envia brincadeiras.
+ * ADMIN — responsável pela moderação e aprovação das brincadeiras.
+ */
+enum UserRole {
+  USER
+  ADMIN
+}
+
+/**
+ * Situação de uma brincadeira enviada pela comunidade.
+ *
+ * PENDENTE  — aguardando revisão do administrador.
+ * APROVADO  — publicada no catálogo oficial do site.
+ * REJEITADO — não entra no catálogo; guarda o motivo.
+ */
+enum CommunityGameStatus {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
 model User {
   id            String   @id
   name          String
   email         String   @unique
   emailVerified Boolean  @default(false)
   image         String?
+  role          UserRole @default(USER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -22,6 +47,11 @@ model User {
   posts    Post[]
   comments Comment[]
   likes    Like[]
+
+  /**
+   * Brincadeiras enviadas pela comunidade com a autoria deste usuário.
+   */
+  communityGames CommunityGame[]
 
   @@map("user")
 }
@@ -125,4 +155,58 @@ model Like {
   @@index([userId])
   @@index([postId])
   @@map("like")
+}
+
+/**
+ * Brincadeira enviada pela comunidade.
+ *
+ * Todo envio nasce como PENDENTE e só entra no catálogo oficial
+ * do site quando um administrador aprovar. A estrutura segue a
+ * mesma das brincadeiras existentes (Nome, imagem, descrição, como
+ * brincar, materiais, participantes e idade) mais os campos novos
+ * (local, segurança, supervisão e autor).
+ */
+model CommunityGame {
+  id    String @id @default(cuid())
+  name  String
+  image String?
+
+  desc      String
+  how       String
+  materials String
+  location  String
+
+  /**
+   * Habilidades desenvolvidas (ex.: Equilíbrio, Coordenação).
+   */
+  benefits String[]
+
+  /**
+   * Quantidade mínima de participantes e idade mínima
+   * recomendada para brincar com segurança.
+   */
+  minPlayers Int
+  minAge     Int
+
+  /**
+   * Categorias — a mesma brincadeira pode pertencer a várias.
+   */
+  categories String[]
+
+  safety      String
+  supervision Boolean @default(false)
+
+  status          CommunityGameStatus @default(PENDENTE)
+  rejectionReason String?
+  reviewedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([authorId])
+  @@map("community_game")
 }
