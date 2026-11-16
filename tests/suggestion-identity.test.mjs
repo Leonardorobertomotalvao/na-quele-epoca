@@ -22,3 +22,28 @@ test('public suggestion API binds author to session and does not select email', 
   assert.match(route, /authorId: session\.user\.id/);
   assert.doesNotMatch(route, /author:\s*\{[\s\S]*?email:\s*true/);
 });
+
+test('Prisma import is inert during build; real query still rejects missing DATABASE_URL', async () => {
+  const prismaSource = await readFile(new URL('../lib/prisma.ts', import.meta.url), 'utf8');
+  const filename = new URL('../lib/prisma.ts', import.meta.url).pathname;
+  const module = new Module(filename);
+  module.filename = filename;
+  module.paths = Module._nodeModulePaths(new URL('../lib', import.meta.url).pathname);
+  const original = Module._load;
+  const hadUrl = Object.hasOwn(process.env, 'DATABASE_URL');
+  const oldUrl = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  Module._load = function (name, parent, isMain) {
+    if (name === '@prisma/adapter-pg') return { PrismaPg: class {} };
+    if (name === '../generated/prisma/client') return { PrismaClient: class {} };
+    return original.call(this, name, parent, isMain);
+  };
+  try {
+    module._compile(ts.transpile(prismaSource, { module: ts.ModuleKind.CommonJS }), filename);
+    assert.throws(() => module.exports.prisma.user.findUnique(), /DATABASE_URL não foi definida/);
+  } finally {
+    Module._load = original;
+    if (hadUrl) process.env.DATABASE_URL = oldUrl;
+    else delete process.env.DATABASE_URL;
+  }
+});
