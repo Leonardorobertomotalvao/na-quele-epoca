@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  detalhesDaModeracao,
+  pareceEnvioRepetido,
+  verificarTexto,
+} from "@/lib/moderacao-texto";
 
 export async function GET(request: Request) {
   try {
@@ -20,9 +25,27 @@ export async function GET(request: Request) {
       );
     }
 
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    const post = await prisma.post.findUnique({ where: { id: postId }, select: { authorId: true, oculto: true } });
+    if (!post || (post.oculto && post.authorId !== session?.user?.id)) {
+      return NextResponse.json({ error: "Publicação não encontrada." }, { status: 404 });
+    }
+
+    /**
+     * Comentários ocultos pela moderação automática ficam
+     * visíveis APENAS para o autor (aviso de revisão). Todos
+     * os demais comentários ocultos não aparecem no feed.
+     */
     const comments = await prisma.comment.findMany({
       where: {
         postId,
+
+        OR: session?.user
+          ? [{ oculto: false }, { authorId: session.user.id }]
+          : [{ oculto: false }],
       },
 
       orderBy: {
@@ -130,6 +153,8 @@ export async function POST(request: Request) {
 
       select: {
         id: true,
+        authorId: true,
+        oculto: true,
       },
     });
 
@@ -144,11 +169,88 @@ export async function POST(request: Request) {
       );
     }
 
+    /**
+     * Publicação oculta pela moderação não recebe comentários
+     * de terceiros (só o autor vê o post e pode comentar nele).
+     */
+    if (post.oculto && post.authorId !== session.user.id) {
+      return NextResponse.json(
+        {
+          error: "Publicação não encontrada.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    /**
+     * Moderação automática: textos claramente impróprios são
+     * barrados; textos suspeitos entram ocultos, aguardando a
+     * análise de um administrador (nunca exclusão automática).
+     */
+    const analise = verificarTexto(content);
+
+    if (analise.nivel === "BLOQUEADO") {
+      return NextResponse.json(
+        {
+          error: analise.mensagem ?? "Escreva com gentileza, por favor.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    /**
+     * Anti-spam: não repetir o MESMO texto logo após o anterior.
+     */
+    const ultimosProprios = await prisma.comment.findMany({
+      where: {
+        authorId: session.user.id,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+
+      take: 2,
+
+      select: {
+        content: true,
+      },
+    });
+
+    if (
+      pareceEnvioRepetido(
+        content,
+        ultimosProprios.map((c) => c.content)
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Você já escreveu exatamente este comentário há pouco. Que tal comentar algo novo?",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const oculto = analise.nivel === "SUSPEITO";
+
     const comment = await prisma.comment.create({
       data: {
         content,
+
         postId,
+
         authorId: session.user.id,
+
+        oculto,
+        ocultoMotivo: oculto ? "classificacao automatica" : null,
+        ocultoEm: oculto ? new Date() : null,
       },
 
       include: {
@@ -161,6 +263,34 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    /**
+     * Registro automático na central de moderação.
+     */
+    if (oculto) {
+      const jaTemFlagAutomatica = await prisma.contentFlag.findFirst({
+        where: {
+          tipo: "COMMENT",
+          contentId: comment.id,
+          origem: "AUTOMATICA",
+          status: "PENDENTE",
+        },
+
+        select: { id: true },
+      });
+
+      if (!jaTemFlagAutomatica) {
+        await prisma.contentFlag.create({
+          data: {
+            tipo: "COMMENT",
+            contentId: comment.id,
+            origem: "AUTOMATICA",
+            classificacao: analise.categorias.join(", ") || "SUSPEITO",
+            detalhes: detalhesDaModeracao(analise),
+          },
+        });
+      }
+    }
 
     return NextResponse.json(comment, {
       status: 201,

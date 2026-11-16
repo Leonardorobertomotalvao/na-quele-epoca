@@ -23,6 +23,8 @@ export function useModalA11y<T extends HTMLElement>(
   fechar: () => void
 ) {
   const ref = useRef<T | null>(null);
+  const fecharRef = useRef(fechar);
+  useEffect(() => { fecharRef.current = fechar; }, [fechar]);
 
   useEffect(() => {
     if (!aberto) {
@@ -51,7 +53,7 @@ export function useModalA11y<T extends HTMLElement>(
     function aoPrecionarTecla(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        fechar();
+        fecharRef.current();
         return;
       }
 
@@ -92,7 +94,7 @@ export function useModalA11y<T extends HTMLElement>(
         elementoAnterior.focus();
       }
     };
-  }, [aberto, fechar]);
+  }, [aberto]);
 
   return ref;
 }

@@ -31,6 +31,84 @@ enum CommunityGameStatus {
   REJEITADO
 }
 
+/**
+ * Origem de uma sinalização de conteúdo.
+ *
+ * DENUNCIA    — um usuário denunciou o conteúdo.
+ * AUTOMATICA  — o classificador automático marcou como suspeito.
+ */
+enum FlagOrigem {
+  DENUNCIA
+  AUTOMATICA
+}
+
+/**
+ * Situação de uma sinalização na central de moderação.
+ */
+enum FlagStatus {
+  PENDENTE
+  RESOLVIDA
+}
+
+/**
+ * Ação final escolhida pelo moderador.
+ *
+ * MANTIDO    — conteúdo continua/aprovado como estava.
+ * RESTAURADO — conteúdo oculto voltou a aparecer.
+ * EXCLUIDO   — conteúdo removido (decisão humana, nunca automática).
+ */
+enum FlagResultado {
+  MANTIDO
+  RESTAURADO
+  EXCLUIDO
+}
+
+/**
+ * Motivos de denúncia escolhidos pelos usuários.
+ */
+enum MotivoDenuncia {
+  XINGAMENTO
+  ASSEDIO
+  AMEACA
+  ODIO
+  SPAM
+  INADEQUADO
+  OUTRO
+}
+
+/**
+ * Tipo de conteúdo sinalizado.
+ */
+enum FlagConteudoTipo {
+  POST
+  COMMENT
+}
+
+/**
+ * Situação do envio de um brinquedo da Oficina.
+ *
+ * PENDENTE            — aguardando revisão do administrador.
+ * APROVADO            — publicado na Oficina oficial.
+ * REJEITADO           — não entra na Oficina; guarda o motivo.
+ * CORRECAO_SOLICITADA — o administrador pediu ajustes; o autor
+ *                       pode editar e reenviar.
+ */
+enum ToyStatus {
+  PENDENTE
+  APROVADO
+  REJEITADO
+  CORRECAO_SOLICITADA
+}
+
+/**
+ * Nível de dificuldade declarado de um brinquedo da Oficina.
+ */
+enum ToyDificuldade {
+  FACIL
+  INTERMEDIARIO
+  AVANCADO
+}
+
 model User {
   id            String   @id
   name          String
@@ -52,6 +130,19 @@ model User {
    * Brincadeiras enviadas pela comunidade com a autoria deste usuário.
    */
   communityGames CommunityGame[]
+  communityGameReviews CommunityGameModerationEvent[] @relation("community_game_reviews")
+
+  /**
+   * Oficina: brinquedos criados e compartilhados por este usuário.
+   */
+  brinquedosOficina WorkshopToy[] @relation("oficina_envios")
+
+  /**
+   * Moderação: denúncias feitas e revisões conduzidas.
+   */
+  denunciasFeitas     ContentFlag[]     @relation("denuncias")
+  moderacoesFeitas    ContentFlag[]     @relation("moderacoes_feitas")
+  acoesDeModeracao    ModerationAction[] @relation("acoes_moderacao")
 
   @@map("user")
 }
@@ -112,6 +203,15 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /**
+   * Ocultação pela moderação automática. Conteúdo oculto só
+   * continua visível para o próprio autor (aviso de revisão) e
+   * volta a aparecer quando o administrador aprovar.
+   */
+  oculto       Boolean    @default(false)
+  ocultoMotivo String?
+  ocultoEm     DateTime?
+
   authorId String
 
   author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -128,6 +228,13 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  /**
+   * Ocultação pela moderação automática (mesma regra dos posts).
+   */
+  oculto       Boolean    @default(false)
+  ocultoMotivo String?
+  ocultoEm     DateTime?
 
   authorId String
   postId   String
@@ -205,8 +312,154 @@ model CommunityGame {
 
   authorId String
   author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  moderationEvents CommunityGameModerationEvent[]
 
   @@index([status, createdAt])
   @@index([authorId])
   @@map("community_game")
+}
+
+model CommunityGameModerationEvent {
+  id              String        @id @default(cuid())
+  communityGameId String?
+  communityGame   CommunityGame? @relation(fields: [communityGameId], references: [id], onDelete: SetNull)
+  gameName        String
+  moderatorId     String?
+  moderator       User?          @relation("community_game_reviews", fields: [moderatorId], references: [id], onDelete: SetNull)
+  moderatorName   String
+  action          String
+  reason          String?
+  createdAt       DateTime       @default(now())
+
+  @@index([communityGameId, createdAt])
+  @@index([moderatorId, createdAt])
+  @@map("community_game_moderation_event")
+}
+
+/**
+ * Sinalização de conteúdo (denúncia de usuários ou marcação
+ * automática do classificador).
+ *
+ * Regras importantes:
+ * - sinalização automática NUNCA exclui conteúdo: posts e
+ *   comentários ficam ocultos (campo oculto) aguardando revisão;
+ * - uma denúncia não duplica (mesmo usuário + mesmo conteúdo);
+ * - casos resolvidos continuam no histórico com a ação final.
+ */
+model ContentFlag {
+  id String @id @default(cuid())
+
+  tipo      FlagConteudoTipo
+  contentId String
+  origem    FlagOrigem
+
+  /**
+   * Preenchido quando origem = DENUNCIA.
+   */
+  motivo MotivoDenuncia?
+
+  /**
+   * Preenchido quando origem = AUTOMATICA: categoria do motor
+   * (ex.: AMEACA, SPAM) + trechos/diagnósticos.
+   */
+  classificacao String?
+  detalhes      String?
+
+  reporterId String?
+  reporter   User?   @relation("denuncias", fields: [reporterId], references: [id], onDelete: SetNull)
+
+  status FlagStatus @default(PENDENTE)
+
+  /**
+   * Preenchidos na resolução pelo administrador.
+   */
+  resultado    FlagResultado?
+  reviewedById String?
+  reviewedBy   User?          @relation("moderacoes_feitas", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([tipo, contentId, origem, reporterId])
+  @@index([status, createdAt])
+  @@index([tipo, contentId])
+  @@map("content_flag")
+}
+
+/**
+ * Histórico de ações de moderação (central de moderação).
+ *
+ * Registra TODAS as ações do administrador — restabelecer,
+ * excluir, manter, aprovar/rejeitar brinquedos — para consulta
+ * futura, mesmo que o conteúdo original já não exista mais
+ * (por isso guarda um resumo do conteúdo).
+ */
+model ModerationAction {
+  id     String @id @default(cuid())
+  acao   String
+  tipo   FlagConteudoTipo
+  contentId String
+
+  adminId String?
+  admin   User?   @relation("acoes_moderacao", fields: [adminId], references: [id], onDelete: SetNull)
+
+  nota           String?
+  conteudoResumo String?
+
+  createdAt DateTime @default(now())
+
+  @@index([acao, createdAt])
+  @@index([tipo, contentId])
+  @@map("moderation_action")
+}
+
+/**
+ * Brinquedo criado pela comunidade para a Oficina.
+ *
+ * Envio nasce PENDENTE: só aparece na Oficina oficial depois da
+ * aprovação de um administrador (nunca auto-aprovação nem a do
+ * próprio autor). Campos seguem o formato planejado para público
+ * escolar: materiais, ferramentas, passos, tempo, idade e
+ * orientações de segurança com supervisão adulta.
+ */
+model WorkshopToy {
+  id String @id @default(cuid())
+
+  name  String
+  image String?
+
+  description String
+
+  materials String[]
+  tools     String[]
+  steps     String[]
+
+  timeLabel  String
+  difficulty ToyDificuldade
+  minAge     Int
+  players    Int?
+
+  benefits     String[]
+  alternatives String[]
+
+  /**
+   * Recomendações de segurança e, quando necessário,
+   * supervisão de um adulto.
+   */
+  safety      String
+  supervision Boolean @default(true)
+
+  status          ToyStatus @default(PENDENTE)
+  rejectionReason String?
+  reviewedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId String
+  author   User   @relation("oficina_envios", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([authorId])
+  @@map("workshop_toy")
 }

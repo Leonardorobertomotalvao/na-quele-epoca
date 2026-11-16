@@ -10,6 +10,8 @@
 // nunca confia no cliente.
 // ============================================================
 
+import { verificarTexto } from '@/lib/moderacao-texto'
+
 /**
  * Categorias válidas do catálogo.
  *
@@ -88,35 +90,14 @@ export function normalizarTexto(valor: string): string {
 }
 
 /**
- * Palavras bloqueadas na moderação. A lista é intencionalmente
- * curta e explícita; avaliações humanas (do administrador) são a
- * proteção principal — ela existe para barrar o mais grosseiro
- * antes de um humano precisar olhar.
- */
-const TERMOS_PROIBIDOS = [
-  'caralho',
-  'buceta',
-  'porra',
-  'puta',
-  'puto',
-  'merda',
-  'bosta',
-  'otario',
-  'idiota',
-  'retardado',
-  'babaca',
-  'desgraca',
-  'estupido',
-]
-
-/**
- * Verifica se o texto contém termos impróprios.
- * A comparação usa o texto normalizado para evitar
- * disfarces com acentos/maiúsculas.
+ * Verifica se o texto é claramente impróprio (bloqueio imediato).
+ * Usa o motor da lib/moderacao-texto (leetspeak, letras espaçadas,
+ * contexto educativo etc.). Textos apenas "suspeitos" NÃO são
+ * considerados bloqueados aqui — brincadeiras enviadas já passam
+ * por revisão humana no fluxo de pendentes.
  */
 export function contemConteudoInadequado(texto: string): boolean {
-  const normalizado = normalizarTexto(texto)
-  return TERMOS_PROIBIDOS.some((termo) => normalizado.includes(termo))
+  return verificarTexto(texto).nivel === 'BLOQUEADO'
 }
 
 /**

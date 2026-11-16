@@ -1163,6 +1163,14 @@ export default function Page() {
 
       </section>
 
+      <section className="catalog-contribute" aria-labelledby="contribute-title">
+        <div>
+          <h3 id="contribute-title">Não encontrou sua brincadeira?</h3>
+          <p>Conhece outra brincadeira? Compartilhe com a gente!</p>
+        </div>
+        <a href="/comunidade#sugerir">Sugerir uma brincadeira <ArrowRight size={18} /></a>
+      </section>
+
       {/* COMUNIDADE NA HOME */}
 
       <section className="home-community">

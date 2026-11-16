@@ -45,10 +45,12 @@ export async function POST(request: Request) {
 
       select: {
         id: true,
+        authorId: true,
+        oculto: true,
       },
     });
 
-    if (!post) {
+    if (!post || (post.oculto && post.authorId !== session.user.id)) {
       return NextResponse.json(
         {
           error: "Publicação não encontrada.",

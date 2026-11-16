@@ -48,6 +48,7 @@ async function exigirAdmin(request: Request) {
     select: {
       id: true,
       role: true,
+        name: true,
     },
   });
 
@@ -84,6 +85,7 @@ export async function GET(request: Request) {
             id: true,
             name: true,
             image: true,
+            email: true,
           },
         },
       },
@@ -127,11 +129,12 @@ export async function GET(request: Request) {
  */
 export async function PATCH(request: Request) {
   try {
-    const { erro } = await exigirAdmin(request);
+    const { erro, usuario: admin } = await exigirAdmin(request);
 
     if (erro) {
       return erro;
     }
+    if (!admin) return NextResponse.json({ error: "Somente administradores podem moderar." }, { status: 403 });
 
     const corpo = await request.json().catch(() => null);
 
@@ -197,7 +200,7 @@ export async function PATCH(request: Request) {
       }
 
       const salvo = await prisma.communityGame.update({
-        where: { id },
+        where: { id, status: "PENDENTE" },
         data: camposDeConteudo(validação.dados),
       });
 
@@ -222,14 +225,11 @@ export async function PATCH(request: Request) {
         datas = camposDeConteudo(validação.dados);
       }
 
-      const salvo = await prisma.communityGame.update({
-        where: { id },
-        data: {
-          ...datas,
-          status: "APROVADO",
-          reviewedAt: new Date(),
-        },
+      const salvo = await registrarDecisao({
+        id, moderator: admin, action: "APROVADO", reason: null,
+        data: { ...datas, status: "APROVADO", reviewedAt: new Date() },
       });
+      if (!salvo) return NextResponse.json({ error: "Este envio já foi atualizado. Recarregue a lista." }, { status: 409 });
 
       return NextResponse.json({ ok: true, item: salvo });
     }
@@ -252,14 +252,11 @@ export async function PATCH(request: Request) {
         );
       }
 
-      const salvo = await prisma.communityGame.update({
-        where: { id },
-        data: {
-          status: "REJEITADO",
-          rejectionReason: motivo,
-          reviewedAt: new Date(),
-        },
+      const salvo = await registrarDecisao({
+        id, moderator: admin, action: "REJEITADO", reason: motivo,
+        data: { status: "REJEITADO", rejectionReason: motivo, reviewedAt: new Date() },
       });
+      if (!salvo) return NextResponse.json({ error: "Este envio já foi atualizado. Recarregue a lista." }, { status: 409 });
 
       return NextResponse.json({ ok: true, item: salvo });
     }
@@ -270,12 +267,31 @@ export async function PATCH(request: Request) {
     );
   } catch (error) {
     console.error("Erro na moderação (PATCH):", error);
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
+      return NextResponse.json({ error: "Este envio já foi atualizado. Recarregue a lista antes de continuar." }, { status: 409 });
+    }
 
     return NextResponse.json(
       { error: "Não foi possível processar a moderação agora." },
       { status: 500 }
     );
   }
+}
+
+async function registrarDecisao({ id, moderator, action, reason, data }: {
+  id: string; moderator: { id: string; name: string };
+  action: "APROVADO" | "REJEITADO"; reason: string | null; data: Record<string, unknown>;
+}) {
+  return prisma.$transaction(async (tx) => {
+    const update = await tx.communityGame.updateMany({ where: { id, status: "PENDENTE" }, data });
+    if (update.count !== 1) return null;
+    await tx.communityGameModerationEvent.create({ data: {
+      communityGameId: id, gameName: String(data.name ?? ""),
+      moderatorId: moderator.id, moderatorName: moderator.name,
+      action, reason,
+    } });
+    return tx.communityGame.findUnique({ where: { id } });
+  });
 }
 
 /**

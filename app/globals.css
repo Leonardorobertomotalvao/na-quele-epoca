@@ -4359,3 +4359,28 @@ footer {
   background: #16c978;
   color: #04290f;
 }
+/* Convite contextual junto ao catálogo, usando a paleta existente. */
+.catalog-contribute {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 20px 24px;
+  color: var(--ink);
+}
+.catalog-contribute p { color: var(--muted); }
+.catalog-contribute a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--green);
+  color: var(--ink);
+  font-weight: 700;
+}
+@media (max-width: 700px) {
+  .catalog-contribute { flex-direction: column; align-items: flex-start; }
+}

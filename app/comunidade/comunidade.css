@@ -872,6 +872,169 @@
 }
 
 /* ============================================================
+   COMENTÁRIO — REVISÃO, AÇÕES E CONFIRMAÇÃO
+   ============================================================ */
+
+.comment-revisao {
+  display: inline-block;
+
+  margin: 2px 0 6px;
+
+  padding: 3px 8px;
+
+  background: rgba(240, 180, 41, 0.14);
+
+  color: #f0b429;
+
+  border: 1px solid rgba(240, 180, 41, 0.35);
+  border-radius: 7px;
+
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 4px;
+}
+
+.comment-action {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 4px;
+
+  padding: 4px 8px;
+
+  background: transparent;
+
+  color: #7f91a9;
+
+  border: 0;
+  border-radius: 7px;
+
+  font: inherit;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.comment-action:hover:not(:disabled) {
+  background: #25334a;
+
+  color: #ffffff;
+}
+
+.comment-action:disabled {
+  opacity: 0.55;
+
+  cursor: wait;
+}
+
+.comment-action.alerta {
+  color: #ff8a70;
+}
+
+.comment-action.alerta:hover:not(:disabled) {
+  background: rgba(255, 117, 65, 0.14);
+
+  color: #ff8a70;
+}
+
+.comment-confirm {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  color: #a6b6c7;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   MODAL DE DENÚNCIA
+   ============================================================ */
+
+.community-modal--denuncia {
+  max-width: 440px;
+}
+
+.denuncia-intro {
+  margin: 0 0 4px;
+
+  color: #94a3b8;
+
+  font-size: 12.5px;
+}
+
+.denuncia-opcoes {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+
+  margin: 10px 0 12px;
+}
+
+.denuncia-opcao {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 10px 12px;
+
+  background: #233149;
+
+  border: 1px solid #334155;
+  border-radius: 10px;
+
+  color: #cbd5e1;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.denuncia-opcao:hover {
+  border-color: #46597a;
+
+  color: #ffffff;
+}
+
+.denuncia-opcao.selected {
+  background: rgba(12, 139, 98, 0.16);
+
+  border-color: #0c8b62;
+
+  color: #eafff4;
+}
+
+.denuncia-opcao input {
+  accent-color: #0c8b62;
+}
+
+/* ============================================================
    FEED VAZIO
    ============================================================ */
 
@@ -1192,8 +1355,11 @@
 
 .community-image-preview img {
   display: block;
-  width: 100%;
-  max-height: 420px;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(420px, 65vh);
+  margin: 0 auto;
   object-fit: contain;
   background: rgba(0, 0, 0, 0.15);
 }
@@ -1748,11 +1914,15 @@
 .community-post-image img {
   display: block;
 
-  width: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  margin: 0 auto;
 
-  max-height: 460px;
+  max-height: min(460px, 70vh);
 
-  object-fit: cover;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.15);
 
   border-radius: 12px;
 
@@ -2006,7 +2176,12 @@
 }
 
 :root:not(.dark) .community-post-image img {
+  background: #f2f7f3;
   border-color: rgba(21, 52, 59, 0.12);
+}
+
+:root:not(.dark) .share-game-status {
+  color: #087b55;
 }
 
 :root:not(.dark) .community-alert.error {
@@ -2038,6 +2213,62 @@
   background: #ffffff;
 
   border-color: rgba(21, 52, 59, 0.1);
+}
+
+:root:not(.dark) .comment-revisao {
+  background: rgba(240, 180, 41, 0.16);
+
+  color: #8a5a00;
+
+  border-color: rgba(240, 180, 41, 0.45);
+}
+
+:root:not(.dark) .comment-action {
+  color: #54677a;
+}
+
+:root:not(.dark) .comment-action:hover:not(:disabled) {
+  background: rgba(21, 52, 59, 0.06);
+
+  color: var(--ink, #17242a);
+}
+
+:root:not(.dark) .comment-action.alerta {
+  color: #b3371d;
+}
+
+:root:not(.dark) .comment-action.alerta:hover:not(:disabled) {
+  background: rgba(235, 90, 60, 0.1);
+
+  color: #b3371d;
+}
+
+:root:not(.dark) .comment-confirm {
+  color: #54677a;
+}
+
+:root:not(.dark) .denuncia-intro {
+  color: #54677a;
+}
+
+:root:not(.dark) .denuncia-opcao {
+  background: #f2f7f3;
+
+  border-color: rgba(21, 52, 59, 0.14);
+
+  color: var(--ink, #17242a);
+}
+
+:root:not(.dark) .denuncia-opcao:hover {
+  border-color: rgba(21, 52, 59, 0.3);
+}
+
+:root:not(.dark) .denuncia-opcao.selected {
+  background: rgba(22, 201, 120, 0.12);
+
+  border-color: #16c978;
+
+  color: #08543d;
 }
 
 :root:not(.dark) .community-page :focus-visible {

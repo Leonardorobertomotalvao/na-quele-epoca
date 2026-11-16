@@ -74,6 +74,8 @@ node_modules
 # Arquivos gerados pelo Next.js durante o desenvolvimento
 # e durante a compilação do projeto.
 .next/
+.next-verificacao/
+*.tsbuildinfo
 
 # Arquivo de metadados criado pelo macOS
 .DS_Store

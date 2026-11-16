@@ -5,6 +5,10 @@ import { ArrowLeft, Check, Mail, Lock, UserRound } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
 export default function CadastroPage() {
+  function destinoAposEntrar() {
+    return new URLSearchParams(window.location.search).get("destino") === "sugerir"
+      ? "/comunidade#sugerir" : "/";
+  }
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,7 +40,7 @@ export default function CadastroPage() {
       return;
     }
 
-    window.location.href = "/";
+    window.location.href = destinoAposEntrar();
   }
 
   async function handleEntrar(e: React.FormEvent) {
@@ -60,7 +64,7 @@ export default function CadastroPage() {
       return;
     }
 
-    window.location.href = "/";
+    window.location.href = destinoAposEntrar();
   }
 
   async function handleGoogleLogin() {
@@ -69,7 +73,7 @@ export default function CadastroPage() {
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/",
+      callbackURL: destinoAposEntrar(),
     });
 
     if (error) {

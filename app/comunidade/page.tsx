@@ -11,11 +11,13 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
+  Flag,
   Heart,
   LoaderCircle,
   MessageCircle,
   Send,
   Sparkles,
+  Trash2,
   Users,
 } from "lucide-react";
 
@@ -34,6 +36,9 @@ type CommunityComment = {
   content: string;
   createdAt: string;
 
+  authorId: string;
+  oculto: boolean;
+
   author: {
     id: string;
     name: string;
@@ -42,6 +47,7 @@ type CommunityComment = {
 };
 
 type CommunityPost = {
+  oculto?: boolean;
   id: string;
   content: string;
   imageUrl: string | null;
@@ -87,6 +93,20 @@ const LOCAIS_BRINCADEIRA = [
   "Qualquer lugar",
 ];
 
+/**
+ * 7 motivos de denúncia — os mesmos rótulos que a rota
+ * /api/comunidade/denuncias espera receber.
+ */
+const MOTIVOS_DENUNCIA = [
+  "Xingamento ou ofensa",
+  "Assédio ou bullying",
+  "Ameaça",
+  "Discurso de ódio",
+  "Spam",
+  "Conteúdo inadequado",
+  "Outro",
+];
+
 /* ============================================================
    PÁGINA
    ============================================================ */
@@ -130,6 +150,165 @@ const [message, setMessage] = useState("");
     useState<string | null>(null);
 
   /* ==========================================================
+     DENÚNCIAS — modal com 7 motivos
+     ========================================================== */
+
+  const [reportTarget, setReportTarget] = useState<{
+    tipo: "POST" | "COMMENT";
+    id: string;
+  } | null>(null);
+
+  const [reportMotivo, setReportMotivo] = useState("");
+
+  const [reportEnviando, setReportEnviando] =
+    useState(false);
+
+  const reportRef = useModalA11y<HTMLElement>(
+    reportTarget !== null,
+    () => setReportTarget(null)
+  );
+
+  function abrirDenuncia(
+    tipo: "POST" | "COMMENT",
+    id: string
+  ) {
+    setReportMotivo("");
+    setReportTarget({ tipo, id });
+  }
+
+  async function handleEnviarDenuncia(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    if (!reportTarget || !reportMotivo) {
+      return;
+    }
+
+    try {
+      setReportEnviando(true);
+
+      const resposta = await fetch(
+        "/api/comunidade/denuncias",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            tipo: reportTarget.tipo,
+            contentId: reportTarget.id,
+            motivo: reportMotivo,
+          }),
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(
+          dados?.error ||
+            "Não foi possível enviar a denúncia agora."
+        );
+      }
+
+      setReportTarget(null);
+      setReportMotivo("");
+
+      setMessage(
+        dados?.duplicada
+          ? "Já tínhamos recebido esse aviso — nossa moderação vai conferir com cuidado."
+          : "Obrigado por avisar. Nossa moderação vai conferir com cuidado."
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível enviar a denúncia agora."
+      );
+
+      setReportTarget(null);
+    } finally {
+      setReportEnviando(false);
+    }
+  }
+
+  /* ==========================================================
+     EXCLUIR COMENTÁRIO (próprio ou do autor do post)
+     — dois cliques: apagar → confirmar
+     ========================================================== */
+
+  const [confirmDeleteId, setConfirmDeleteId] =
+    useState<string | null>(null);
+
+  const [deletingComment, setDeletingComment] =
+    useState<string | null>(null);
+
+  async function excluirComentario(
+    postId: string,
+    commentId: string
+  ) {
+    try {
+      setDeletingComment(commentId);
+
+      const resposta = await fetch(
+        `/api/comunidade/comments/${commentId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(
+          dados?.error ||
+            "Não foi possível apagar o comentário."
+        );
+      }
+
+      setComments((current) => ({
+        ...current,
+        [postId]: (current[postId] || []).filter(
+          (item) => item.id !== commentId
+        ),
+      }));
+
+      setPosts((currentPosts) =>
+        currentPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+
+                _count: {
+                  ...post._count,
+
+                  comments: Math.max(
+                    0,
+                    post._count.comments - 1
+                  ),
+                },
+              }
+            : post
+        )
+      );
+
+      setMessage(dados?.mensagem || "Comentário apagado.");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível apagar o comentário."
+      );
+    } finally {
+      setDeletingComment(null);
+      setConfirmDeleteId(null);
+    }
+  }
+
+  /* ==========================================================
      CURTIDAS
      ========================================================== */
 
@@ -145,6 +324,7 @@ const [message, setMessage] = useState("");
   const [minhasBrincadeiras, setMinhasBrincadeiras] = useState<
     MinhaBrincadeira[]
   >([]);
+  const [enviosErro, setEnviosErro] = useState("");
 
   const [shareForm, setShareForm] = useState({
     name: "",
@@ -168,7 +348,6 @@ const [message, setMessage] = useState("");
 
   const [shareEnviando, setShareEnviando] = useState(false);
   const [shareErro, setShareErro] = useState("");
-  const [shareAviso, setShareAviso] = useState("");
 
   /**
    * Acessibilidade do formulário: fecha com ESC,
@@ -178,6 +357,13 @@ const [message, setMessage] = useState("");
     gameFormOpen,
     () => setGameFormOpen(false)
   );
+
+  useEffect(() => {
+    if (!sessionLoading && window.location.hash === "#sugerir") {
+      document.getElementById("sugerir")?.scrollIntoView();
+      if (session?.user) setGameFormOpen(true);
+    }
+  }, [sessionLoading, session?.user?.id]);
 
   /* ==========================================================
      CARREGAR POSTS
@@ -224,6 +410,7 @@ const [message, setMessage] = useState("");
      ========================================================== */
 
   const carregarMinhasBrincadeiras = useCallback(async () => {
+    setEnviosErro("");
     try {
       const resposta = await fetch(
         "/api/comunidade/brincadeiras",
@@ -233,25 +420,24 @@ const [message, setMessage] = useState("");
       );
 
       if (!resposta.ok) {
-        return;
+        throw new Error("Falha ao carregar envios");
       }
 
       const dados = await resposta.json();
 
-      if (Array.isArray(dados)) {
-        setMinhasBrincadeiras(dados);
-      }
+      if (!Array.isArray(dados)) throw new Error("Resposta inválida");
+      setMinhasBrincadeiras(dados);
     } catch {
-      /**
-       * Este painel é apenas informativo; sem interromper
-       * a navegação quando a lista não carrega.
-       */
+      setEnviosErro("Não foi possível atualizar seus envios. Os status exibidos podem estar desatualizados. Tente novamente.");
     }
   }, []);
 
   useEffect(() => {
     if (session?.user) {
       carregarMinhasBrincadeiras();
+    } else {
+      setMinhasBrincadeiras([]);
+      setEnviosErro("");
     }
   }, [session?.user, carregarMinhasBrincadeiras]);
 
@@ -339,9 +525,9 @@ function removeSelectedImage() {
 
     const text = content.trim();
 
-    if (!text) {
+    if (!text && !selectedImage) {
       setError(
-        "Escreva alguma coisa antes de publicar."
+        "Escreva alguma coisa ou adicione uma imagem antes de publicar."
       );
 
       return;
@@ -434,7 +620,7 @@ function removeSelectedImage() {
       }
 
       setMessage(
-        "Publicação criada com sucesso!"
+        data.oculto ? "Publicação enviada para revisão. Ela fica visível só para você até a moderação conferir." : "Publicação criada com sucesso!"
       );
     } catch (err) {
       setError(
@@ -461,7 +647,6 @@ function removeSelectedImage() {
     }
 
     setShareErro("");
-    setShareAviso("");
 
     const formatosPermitidos = [
       "image/jpeg",
@@ -543,7 +728,7 @@ function removeSelectedImage() {
     event.preventDefault();
 
     setShareErro("");
-    setShareAviso("");
+    if (shareEnviando) return;
 
     if (!session?.user) {
       setShareErro(
@@ -564,23 +749,36 @@ function removeSelectedImage() {
     const minPlayers = Number(shareForm.minPlayers);
     const minAge = Number(shareForm.minAge);
 
+    function campoInvalido(id: string, mensagem: string) {
+      setShareErro(mensagem);
+      const campo = document.getElementById(id);
+      campo?.setAttribute("aria-invalid", "true");
+      campo?.setAttribute("aria-describedby", "share-game-error");
+      campo?.focus();
+    }
+
     if (name.length < 3) {
-      setShareErro("O nome da brincadeira precisa ter pelo menos 3 letras.");
+      campoInvalido("share-game-name", "O nome da brincadeira precisa ter pelo menos 3 caracteres.");
       return;
     }
 
     if (desc.length < 10) {
-      setShareErro("Escreva uma descrição com pelo menos 10 letras.");
+      campoInvalido("share-game-desc", "Escreva uma descrição com pelo menos 10 caracteres.");
       return;
     }
 
     if (how.length < 10) {
-      setShareErro("Explique como brincar com pelo menos 10 letras.");
+      campoInvalido("share-game-how", "Explique como brincar com pelo menos 10 caracteres.");
       return;
     }
 
     if (shareCategorias.length < 1) {
       setShareErro("Escolha pelo menos uma categoria.");
+      return;
+    }
+
+    if (benefits.length > 8 || benefits.some((item) => item.length < 2 || item.length > 40)) {
+      campoInvalido("share-game-benefits", "Informe até 8 habilidades, separadas por vírgulas, com 2 a 40 caracteres cada.");
       return;
     }
 
@@ -679,17 +877,18 @@ function removeSelectedImage() {
 
       setGameFormOpen(false);
       limparFormularioShare();
+      setError("");
 
       setMessage(
         dados.possibleDuplicate
-          ? `Envio recebido! Notamos que já existe \"${dados.possibleDuplicate}\" — a moderação vai conferir antes de aprovar.`
+          ? "Envio recebido e aguardando revisão! Encontramos uma brincadeira com nome semelhante; a moderação vai verificar a possível duplicidade."
           : "Envio recebido! A brincadeira está aguardando a revisão da moderação."
       );
 
       carregarMinhasBrincadeiras();
     } catch (err) {
       setShareErro(
-        err instanceof Error
+        err instanceof TypeError ? "Falha de conexão. Seus dados foram mantidos; tente enviar novamente." : err instanceof Error
           ? err.message
           : "Não foi possível enviar a brincadeira agora."
       );
@@ -891,22 +1090,32 @@ function removeSelectedImage() {
         [postId]: "",
       }));
 
-      setPosts((currentPosts) =>
-        currentPosts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
+      /**
+       * Comentário suspeito entra oculto (revisão humana) e
+       * NÃO entra na contagem pública do post.
+       */
+      if (data?.oculto) {
+        setMessage(
+          "Comentário enviado para revisão: ele fica visível só para você até a moderação conferir."
+        );
+      } else {
+        setPosts((currentPosts) =>
+          currentPosts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
 
-                _count: {
-                  ...post._count,
+                  _count: {
+                    ...post._count,
 
-                  comments:
-                    post._count.comments + 1,
-                },
-              }
-            : post
-        )
-      );
+                    comments:
+                      post._count.comments + 1,
+                  },
+                }
+              : post
+          )
+        );
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -1076,7 +1285,7 @@ function removeSelectedImage() {
                   type="submit"
                   disabled={
                     publishing ||
-                    !content.trim()
+                    (!content.trim() && !selectedImage)
                   }
                 >
                   {publishing ? (
@@ -1122,7 +1331,7 @@ function removeSelectedImage() {
             COMPARTILHAR UMA BRINCADEIRA (CATÁLOGO COLABORATIVO)
             ============================================================ */}
 
-        <section className="share-game-card">
+        <section className="share-game-card" id="sugerir">
           <div className="share-game-copy">
             <span className="share-game-badge">
               <Sparkles size={15} />
@@ -1167,7 +1376,6 @@ function removeSelectedImage() {
               className="share-game-button"
               onClick={() => {
                 setShareErro("");
-                setShareAviso("");
                 setGameFormOpen(true);
               }}
             >
@@ -1177,7 +1385,7 @@ function removeSelectedImage() {
             </button>
           ) : (
             <a
-              href="/cadastro"
+              href="/cadastro?destino=sugerir"
               className="share-game-button"
             >
               Entrar para compartilhar
@@ -1188,6 +1396,37 @@ function removeSelectedImage() {
         </section>
 
         {/* MENSAGENS */}
+
+        {session?.user && minhasBrincadeiras.length > 0 && (
+          <details className="community-alert success">
+            <summary>Minhas sugestões</summary>
+            <ul>
+              {minhasBrincadeiras.map((item) => (
+                <li key={item.id}><strong>{item.name}</strong>: {item.status === "PENDENTE" ? "Aguardando aprovação" : item.status === "APROVADO" ? "Aprovada" : "Rejeitada"}</li>
+              ))}
+            </ul>
+          </details>
+        )}
+
+        {session?.user && enviosErro && (
+          <div className="community-alert error" role="alert">
+            {enviosErro}{" "}
+            <button type="button" className="share-cancel" onClick={carregarMinhasBrincadeiras}>
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
+        {session?.user && minhasBrincadeiras.some((item) => item.status === "REJEITADO" && item.rejectionReason?.trim()) && (
+          <details className="community-alert error">
+            <summary>Motivos de rejeição dos meus envios</summary>
+            <ul>
+              {minhasBrincadeiras.filter((item) => item.status === "REJEITADO" && item.rejectionReason?.trim()).map((item) => (
+                <li key={item.id}><strong>{item.name}:</strong> {item.rejectionReason}</li>
+              ))}
+            </ul>
+          </details>
+        )}
 
         {error && (
           <div
@@ -1288,6 +1527,7 @@ function removeSelectedImage() {
                 {/* TEXTO */}
 
                 <div className="community-post-content">
+                  {post.oculto && <p className="comment-revisao">Aguardando revisão da moderação. Visível só para você.</p>}
                   <p>{post.content}</p>
                 </div>
 
@@ -1295,11 +1535,13 @@ function removeSelectedImage() {
 
                 {post.imageUrl && (
                   <div className="community-post-image">
-                    <img
-                      src={post.imageUrl}
-                      alt={`Imagem da publicação de ${post.author.name}`}
-                      loading="lazy"
-                    />
+                    <a href={post.imageUrl} target="_blank" rel="noopener noreferrer" aria-label="Abrir imagem original em nova aba">
+                      <img
+                        src={post.imageUrl}
+                        alt={`Imagem da publicação de ${post.author.name}`}
+                        loading="lazy"
+                      />
+                    </a>
                   </div>
                 )}
 
@@ -1360,6 +1602,26 @@ function removeSelectedImage() {
                       ? "1 comentário"
                       : `${post._count.comments} comentários`}
                   </button>
+
+                  {session?.user && (
+                    <button
+                      type="button"
+                      className="post-action report-button"
+                      onClick={() =>
+                        abrirDenuncia(
+                          "POST",
+                          post.id
+                        )
+                      }
+                      aria-label={`Denunciar publicação de ${post.author.name}`}
+                    >
+                      <Flag
+                        size={16}
+                      />
+
+                      Denunciar
+                    </button>
+                  )}
                 </footer>
 
                 {/* COMENTÁRIOS */}
@@ -1435,11 +1697,7 @@ function removeSelectedImage() {
                                   <div className="comment-body">
                                     <div className="comment-header">
                                       <strong>
-                                        {
-                                          comment
-                                            .author
-                                            .name
-                                        }
+                                        {comment.author.name}
                                       </strong>
 
                                       <span>
@@ -1449,11 +1707,113 @@ function removeSelectedImage() {
                                       </span>
                                     </div>
 
+                                    {comment.oculto && (
+                                      <span className="comment-revisao">
+                                        Em revisão —
+                                        visível só para
+                                        você até a
+                                        moderação
+                                        conferir.
+                                      </span>
+                                    )}
+
                                     <p>
-                                      {
-                                        comment.content
-                                      }
+                                      {comment.content}
                                     </p>
+
+                                    {session?.user && (
+                                      <div className="comment-actions">
+                                        {comment.author.id !==
+                                          session.user.id && (
+                                          <button
+                                            type="button"
+                                            className="comment-action"
+                                            onClick={() =>
+                                              abrirDenuncia(
+                                                "COMMENT",
+                                                comment.id
+                                              )
+                                            }
+                                            aria-label={`Denunciar comentário de ${comment.author.name}`}
+                                          >
+                                            <Flag
+                                              size={13}
+                                            />
+
+                                            Denunciar
+                                          </button>
+                                        )}
+
+                                        {(comment.authorId ===
+                                          session.user.id ||
+                                          post.author.id ===
+                                            session.user.id) &&
+                                          (confirmDeleteId ===
+                                          comment.id ? (
+                                            <span className="comment-confirm">
+                                              Apagar não
+                                              tem volta.
+
+                                              <button
+                                                type="button"
+                                                className="comment-action alerta"
+                                                disabled={
+                                                  deletingComment ===
+                                                  comment.id
+                                                }
+                                                onClick={() =>
+                                                  excluirComentario(
+                                                    post.id,
+                                                    comment.id
+                                                  )
+                                                }
+                                              >
+                                                {deletingComment ===
+                                                comment.id ? (
+                                                  <LoaderCircle
+                                                    size={13}
+                                                    className="spin"
+                                                  />
+                                                ) : (
+                                                  <Trash2
+                                                    size={13}
+                                                  />
+                                                )}
+
+                                                Apagar
+                                              </button>
+
+                                              <button
+                                                type="button"
+                                                className="comment-action"
+                                                onClick={() =>
+                                                  setConfirmDeleteId(
+                                                    null
+                                                  )
+                                                }
+                                              >
+                                                Deixar
+                                              </button>
+                                            </span>
+                                          ) : (
+                                            <button
+                                              type="button"
+                                              className="comment-action"
+                                              onClick={() =>
+                                                setConfirmDeleteId(
+                                                  comment.id
+                                                )
+                                              }
+                                            >
+                                              <Trash2
+                                                size={13}
+                                              />
+
+                                              Apagar
+                                            </button>
+                                          ))}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               )
@@ -1574,6 +1934,122 @@ function removeSelectedImage() {
       </section>
 
       {/* ============================================================
+          MODAL — DENÚNCIA (7 MOTIVOS)
+          ============================================================ */}
+
+      {reportTarget && (
+        <div
+          className="community-modal-backdrop"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setReportTarget(null);
+            }
+          }}
+        >
+          <article
+            ref={reportRef}
+            className="community-modal community-modal--denuncia"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="denuncia-title"
+            tabIndex={-1}
+          >
+            <header className="community-modal-header">
+              <div>
+                <small>ALERTAR A MODERAÇÃO</small>
+
+                <h2 id="denuncia-title">
+                  O que está errado?
+                </h2>
+              </div>
+
+              <button
+                type="button"
+                className="community-modal-close"
+                aria-label="Fechar denúncia"
+                onClick={() => setReportTarget(null)}
+              >
+                ×
+              </button>
+            </header>
+
+            <form
+              className="community-modal-content"
+              onSubmit={handleEnviarDenuncia}
+            >
+              <p className="denuncia-intro">
+                Você está ajudando a manter a comunidade
+                boa para todo mundo. Escolha o motivo e
+                a moderação confere em seguida.
+              </p>
+
+              <div
+                className="denuncia-opcoes"
+                role="radiogroup"
+                aria-label="Motivo da denúncia"
+              >
+                {MOTIVOS_DENUNCIA.map(
+                  (motivo) => (
+                    <label
+                      key={motivo}
+                      className={
+                        reportMotivo === motivo
+                          ? "denuncia-opcao selected"
+                          : "denuncia-opcao"
+                      }
+                    >
+                      <input
+                        type="radio"
+                        name="denuncia-motivo"
+                        value={motivo}
+                        checked={
+                          reportMotivo === motivo
+                        }
+                        onChange={(event) =>
+                          setReportMotivo(
+                            event.target.value
+                          )
+                        }
+                      />
+
+                      {motivo}
+                    </label>
+                  )
+                )}
+              </div>
+
+              <small className="share-field-hint">
+                Denúncia não é desistir de conversar:
+                funciona melhor para ofensas, ameaças e
+                desrespeito.
+              </small>
+
+              <div className="share-actions">
+                <button
+                  type="button"
+                  className="share-cancel"
+                  onClick={() => setReportTarget(null)}
+                >
+                  Fechar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={
+                    !reportMotivo || reportEnviando
+                  }
+                >
+                  {reportEnviando
+                    ? "Enviando…"
+                    : "Enviar denúncia"}
+                </button>
+              </div>
+            </form>
+          </article>
+        </div>
+      )}
+
+      {/* ============================================================
           MODAL — FORMULÁRIO DE BRINCADEIRA
           ============================================================ */}
 
@@ -1616,9 +2092,15 @@ function removeSelectedImage() {
             <form
               className="community-modal-content"
               onSubmit={handleShareGame}
+              onChange={(event) => {
+                const campo = event.target as HTMLElement;
+                campo.removeAttribute("aria-invalid");
+                campo.removeAttribute("aria-describedby");
+              }}
             >
               {shareErro && (
                 <div
+                  id="share-game-error"
                   className="community-alert error"
                   role="alert"
                 >
@@ -1642,6 +2124,7 @@ function removeSelectedImage() {
                     })
                   }
                   maxLength={60}
+                  minLength={3}
                   placeholder="Amarelinha, Pega-pega…"
                   required
                 />
@@ -1699,6 +2182,7 @@ function removeSelectedImage() {
                     })
                   }
                   maxLength={500}
+                  minLength={10}
                   placeholder="O que é a brincadeira e por que ela é divertida."
                   required
                 />
@@ -1723,6 +2207,7 @@ function removeSelectedImage() {
                     })
                   }
                   maxLength={2000}
+                  minLength={10}
                   placeholder="Passo a passo, regras, dicas da sua época."
                   required
                 />

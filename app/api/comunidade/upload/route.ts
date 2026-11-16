@@ -75,9 +75,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Descobre a extensão
-    const extension =
-      file.name.split(".").pop()?.toLowerCase() || "jpg";
+    // Confere a assinatura e determina a extensão pelo conteúdo aceito.
+    const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+    const extension = file.type === "image/jpeg" && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255
+      ? "jpg"
+      : file.type === "image/png" && [137, 80, 78, 71, 13, 10, 26, 10].every((value, i) => bytes[i] === value)
+      ? "png"
+      : file.type === "image/webp" && String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP"
+      ? "webp" : null;
+    if (!extension) return NextResponse.json({ error: "O conteúdo do arquivo não corresponde a uma imagem JPG, PNG ou WebP válida." }, { status: 400 });
 
     // Cria um nome único
     const fileName =

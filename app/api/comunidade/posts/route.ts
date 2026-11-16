@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  detalhesDaModeracao,
+  pareceEnvioRepetido,
+  verificarTexto,
+} from "@/lib/moderacao-texto";
+import { imagemValida } from "@/lib/validar-brincadeira";
 
 /**
  * ============================================================
@@ -16,10 +22,21 @@ export async function GET(request: Request) {
       headers: request.headers,
     });
 
+    /**
+     * Posts ocultos pela moderação automática aparecem APENAS
+     * para o próprio autor (com aviso "em revisão"). Para os
+     * demais usuários, o post simplesmente não existe no feed.
+     */
     const posts = await prisma.post.findMany({
       orderBy: {
         createdAt: "desc",
       },
+
+      where: session?.user
+        ? {
+            OR: [{ oculto: false }, { authorId: session.user.id }],
+          }
+        : { oculto: false },
 
       include: {
         author: {
@@ -32,7 +49,12 @@ export async function GET(request: Request) {
 
         _count: {
           select: {
-            comments: true,
+            /**
+             * Comentários ocultos não entram na contagem exibida.
+             */
+            comments: {
+              where: { oculto: false },
+            },
             likes: true,
           },
         },
@@ -65,6 +87,10 @@ export async function GET(request: Request) {
       imageUrl: post.imageUrl,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+
+      // Informações de moderação (avisos do autor "em revisão").
+      oculto: post.oculto,
+      ocultoMotivo: post.ocultoMotivo,
 
       author: post.author,
 
@@ -158,6 +184,79 @@ export async function POST(request: Request) {
     }
 
     /**
+     * A imagem precisa ter vindo do upload oficial do site.
+     */
+    if (imageUrl && !imagemValida(imageUrl)) {
+      return NextResponse.json(
+        {
+          error:
+            "A imagem precisa ser enviada pelo site (fale com o suporte se este aviso aparecer).",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    /**
+     * Moderação automática: texto claramente impróprio é
+     * bloqueado; texto suspeito nasce oculto, aguardando
+     * análise humana (nunca excluído e nunca publicado).
+     */
+    const analise = verificarTexto(content);
+
+    if (analise.nivel === "BLOQUEADO") {
+      return NextResponse.json(
+        {
+          error:
+            analise.mensagem ??
+            "Revise as palavras e publique de forma gentil, por favor.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    /**
+     * Anti-spam: não repetir a MESMA publicação logo depois.
+     */
+    const ultimasProprias = await prisma.post.findMany({
+      where: {
+        authorId: session.user.id,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+
+      take: 2,
+
+      select: {
+        content: true,
+      },
+    });
+
+    if (
+      pareceEnvioRepetido(
+        content,
+        ultimasProprias.map((p) => p.content)
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Essa publicação é igual à última que você enviou. Revise antes de publicar de novo.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const oculto = analise.nivel === "SUSPEITO";
+
+    /**
      * Cria o post.
      */
     const post = await prisma.post.create({
@@ -165,6 +264,10 @@ export async function POST(request: Request) {
         content,
         imageUrl,
         authorId: session.user.id,
+
+        oculto,
+        ocultoMotivo: oculto ? "classificacao automatica" : null,
+        ocultoEm: oculto ? new Date() : null,
       },
 
       include: {
@@ -178,12 +281,42 @@ export async function POST(request: Request) {
 
         _count: {
           select: {
-            comments: true,
+            comments: {
+              where: { oculto: false },
+            },
             likes: true,
           },
         },
       },
     });
+
+    /**
+     * Registro automático na central de moderação.
+     */
+    if (oculto) {
+      const jaTemFlagAutomatica = await prisma.contentFlag.findFirst({
+        where: {
+          tipo: "POST",
+          contentId: post.id,
+          origem: "AUTOMATICA",
+          status: "PENDENTE",
+        },
+
+        select: { id: true },
+      });
+
+      if (!jaTemFlagAutomatica) {
+        await prisma.contentFlag.create({
+          data: {
+            tipo: "POST",
+            contentId: post.id,
+            origem: "AUTOMATICA",
+            classificacao: analise.categorias.join(", ") || "SUSPEITO",
+            detalhes: detalhesDaModeracao(analise),
+          },
+        });
+      }
+    }
 
     /**
      * Um post recém-criado ainda não foi curtido.

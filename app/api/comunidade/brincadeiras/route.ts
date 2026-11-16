@@ -20,6 +20,7 @@ import {
   normalizarTexto,
   validarBrincadeira,
 } from "@/lib/validar-brincadeira";
+import { suggestionIdentityError } from "@/lib/suggestion-identity";
 
 const LIMITE_PENDENTES = 5;
 const INTERVALO_ENTRE_ENVIOS_MS = 60 * 1000;
@@ -90,6 +91,13 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+
+    const identidade = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true, emailVerified: true },
+    });
+    const identidadeErro = suggestionIdentityError(identidade);
+    if (identidadeErro) return NextResponse.json({ error: identidadeErro }, { status: 403 });
 
     // ============ Anti-spam: esperas e limites por usuário ============
 
